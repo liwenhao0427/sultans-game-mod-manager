@@ -1,0 +1,17 @@
+{
+  "name": "困难模式骰子成功率下降",
+  "author": "萧敷艾荣",
+  "version": "1.0.0",
+  "gameVersion": "17954583",
+  "updateDate": "2025.04.08",
+  "files": [
+    {
+      "source": "init/1.json",
+      "destination": "/Sultan's Game_Data/StreamingAssets/config/init/1.json",
+      "mode": "REPLACE1",
+      "modeDesc": "替换文本，查找两个搜索项{val1}、{val2}，替换中间的内容",
+      "val1": "\"difficulty\":",
+      "val2": "//  俺寻思仪式id, 不配置或不存在就不显示"
+    }
+  ]
+}
