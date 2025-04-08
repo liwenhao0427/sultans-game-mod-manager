@@ -1,0 +1,16 @@
+{
+  "name": "开局金奢靡",
+  "author": "萧敷艾荣",
+  "version": "1.0.0",
+  "gameVersion": "17954583",
+  "updateDate": "2025.04.08",
+  "files": [
+    {
+      "source": "modConfig.json",
+      "destination": "/path/to/target/modConfig.json",
+      "mode": "ADD1",
+      "modeDesc": "在倒数第{val1}行添加",
+      "val1": 1
+    }
+  ]
+}
