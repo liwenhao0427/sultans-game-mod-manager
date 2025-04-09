@@ -7,7 +7,6 @@
   "files": [
     {
       "source": "init/1.json",
-      "destination": "/Sultan's Game_Data/StreamingAssets/config/init/1.json",
       "mode": "REPLACE1",
       "modeDesc": "替换文本，查找两个搜索项{val1}、{val2}，替换中间的内容",
       "val1": "\"difficulty\":",

@@ -1,0 +1,27 @@
+{
+  "name": "跳过金币事件结算",
+  "author": "李文浩",
+  "version": "1.0.0",
+  "gameVersion": "17954583",
+  "updateDate": "2025.04.08",
+  "files": [
+    {
+      "source": "event/5300066.json",
+      "mode": "REPLACE0",
+      "modeDesc": "替换搜索到的{val1}行",
+      "val1": "\"rite\":5000001,  //开启治理家业"
+    },
+    {
+      "source": "rite/5003020.json",
+      "mode": "REPLACE0",
+      "modeDesc": "替换搜索到的{val1}行",
+      "val1": "\"auto_result\":"
+    },
+    {
+      "source": "rite/5003022.json",
+      "mode": "REPLACE0",
+      "modeDesc": "替换搜索到的{val1}行",
+      "val1": "\"auto_result\":"
+    }
+  ]
+}
