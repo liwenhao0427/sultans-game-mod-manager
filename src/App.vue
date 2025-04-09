@@ -19,15 +19,27 @@
       <el-table-column label="文件">
         <template v-slot="scope">
           <el-ul>
-            <li v-for="(file, index) in scope.row.files" :key="index">
-              {{ file.source }}
-              <br />
-              <small>{{ file.modeDesc }} </small>
+            <li v-for="(file, index) in scope.row.files" :key="index" style="display: flex; align-items: center;">
+              <span style="flex: 1;">{{ file.source }}</span>
+              <small style="flex: 2; margin-left: 10px;">{{ file.modeDesc }}</small>
+              <el-button type="text" @click="viewFileDetails(scope.row.name, file.source)" style="margin-left: auto;">
+                查看详情
+              </el-button>
             </li>
           </el-ul>
         </template>
       </el-table-column>
     </el-table>
+    <el-dialog
+        title="文件详情"
+        v-model="fileDetailsVisible"
+        width="80%"
+    >
+      <pre>{{ fileContent }}</pre>
+      <template #footer>
+        <el-button @click="fileDetailsVisible = false">关闭</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -38,6 +50,8 @@ import { saveAs } from "file-saver";
 export default {
   data() {
     return {
+      fileDetailsVisible: false,
+      fileContent: '', // Stores the content of the selected file
       mods: [], // 存储 Mod 信息
       selectedMods: [], // 存储选中的 Mod
     };
@@ -46,6 +60,21 @@ export default {
     this.loadMods();
   },
   methods: {
+    async viewFileDetails(modName, fileSource) {
+      const filePath = `/Mods/${modName}/${fileSource}`;
+      console.log(filePath)
+      try {
+        const response = await fetch(filePath);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch file: ${filePath}`);
+        }
+        this.fileContent = await response.text();
+        this.fileDetailsVisible = true;
+      } catch (error) {
+        console.error('Error fetching file details:', error);
+        this.$message.error('无法加载文件详情');
+      }
+    },
     loadMods() {
       const requireMod = require.context('@/assets/Mods', true, /modConfig\.json$/);
       const modFiles = requireMod.keys();
@@ -71,21 +100,21 @@ export default {
           // 修正为public目录直连路径
           const filePath = `/Mods/${mod.name}/${file.source}`;
           const fileContent = await this.loadFile(filePath);
-          
+
           // 创建目录结构
           let currentFolder = modFolder;
           const pathSegments = file.source.split('/').slice(0, -1);
           for (const segment of pathSegments) {
             currentFolder = currentFolder.folder(segment);
           }
-          
+
           currentFolder.file(file.source.split('/').pop(), fileContent);
         }
         // 添加 modConfig.json 文件
         const modConfigContent = JSON.stringify(mod, null, 2);
         modFolder.file('modConfig.json', modConfigContent);
       }
-      
+
       try {
         // 修正批处理文件访问路径
         const bat1Response = await fetch('/Mods/安装mod.txt');
@@ -146,5 +175,10 @@ h1 {
 
 .el-button {
   margin: 20px;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 </style>
