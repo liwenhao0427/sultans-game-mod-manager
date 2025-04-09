@@ -7,8 +7,8 @@
   "files": [
     {
       "source": "upgrade.json",
-      "destination": "/Sultan's Game_Data/StreamingAssets/config/upgrade.json",
-      "mode": "ADD1",
+      "destination": "upgrade.json",
+      "mode": "APPEND",
       "modeDesc": "在倒数第{val1}行添加",
       "val1": 1
     }

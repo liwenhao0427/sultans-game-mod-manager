@@ -94,10 +94,21 @@ export default {
     async exportSelected() {
       const zip = new JSZip();
 
+      // 添加sed.exe到zip根目录
+      try {
+        const sedResponse = await fetch('/sed.exe');
+        const sedBlob = await sedResponse.blob();
+        zip.file('sed.exe', sedBlob);
+      } catch (error) {
+        console.error('sed.exe加载出错:', error);
+      }
+
+      // 创建Mods文件夹
+      const modsFolder = zip.folder("Mods");
+
       for (const mod of this.selectedMods) {
-        const modFolder = zip.folder(mod.name);
+        const modFolder = modsFolder.folder(mod.name);
         for (const file of mod.files) {
-          // 修正为public目录直连路径
           const filePath = `/Mods/${mod.name}/${file.source}`;
           const fileContent = await this.loadFile(filePath);
 
@@ -108,24 +119,34 @@ export default {
             currentFolder = currentFolder.folder(segment);
           }
 
-          currentFolder.file(file.source.split('/').pop(), fileContent);
+          const fileName = file.source.split('/').pop();
+          currentFolder.file(fileName, fileContent);
+
+          // 创建.config文件
+          const configFileName = fileName + '.config';
+          const targetPath = file.destination || file.source;
+
+          let configContent = file.mode + '\n';
+          configContent += 'Sultan\'s Game_Data/StreamingAssets/config/' + targetPath + '\n';
+          configContent += (file.val1 || '') + '\n';
+          configContent += (file.val2 || '');
+
+          currentFolder.file(configFileName, configContent);
         }
-        // 添加 modConfig.json 文件
-        const modConfigContent = JSON.stringify(mod, null, 2);
-        modFolder.file('modConfig.json', modConfigContent);
       }
 
+      // 添加批处理文件
       try {
-        // 修正批处理文件访问路径
-        const bat1Response = await fetch('/Mods/安装mod.txt');
+        // 添加批处理文件
+        const bat1Response = await fetch('/Mods/安装mod.bat');
         const bat1Blob = await bat1Response.blob();
         zip.file('安装mod.bat', bat1Blob);
 
-        const bat2Response = await fetch('/Mods/还原mod.txt');
+        const bat2Response = await fetch('/Mods/还原mod.bat');
         const bat2Blob = await bat2Response.blob();
         zip.file('还原mod.bat', bat2Blob);
       } catch (error) {
-        console.error('文件加载出错:', error);
+        console.error('批处理文件加载出错:', error);
       }
 
       zip.generateAsync({ type: "blob" }).then((content) => {
