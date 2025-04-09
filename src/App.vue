@@ -28,27 +28,53 @@
         style="width: 100%"
         border
         @selection-change="handleSelectionChange"
-        :default-sort="{prop: 'updateDate', order: 'descending'}"
+        :default-sort="{prop: 'recommend', order: 'descending'}"
         v-loading="loading"
       >
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="name" label="Mod 名称" width="200" sortable>
+        <el-table-column prop="name" label="Mod 名称" width="180" sortable>
           <template v-slot="scope">
             <div class="mod-name">{{ scope.row.name }}</div>
           </template>
         </el-table-column>
-        <el-table-column prop="author" label="作者" width="180" sortable>
+        <!-- <el-table-column prop="recommend" label="推荐度" width="180" sortable>
+          <template v-slot="scope">
+            <el-rate
+              v-model="scope.row.recommend"
+              disabled
+              show-score
+              text-color="#ff9900"
+            />
+          </template>
+        </el-table-column> -->
+        <el-table-column prop="author" label="作者" width="150" sortable column-key="author" :filters="getColumnFilters('author')" :filter-method="filterHandler">
           <template v-slot="scope">
             <el-tag size="small">{{ scope.row.author }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="version" label="版本" width="120" sortable />
-        <el-table-column prop="gameVersion" label="游戏版本" width="160" sortable>
+        <el-table-column prop="version" label="版本" width="100" sortable column-key="version" :filters="getColumnFilters('version')" :filter-method="filterHandler" />
+        <el-table-column prop="gameVersion" label="游戏版本" width="120" sortable column-key="gameVersion" :filters="getColumnFilters('gameVersion')" :filter-method="filterHandler">
           <template v-slot="scope">
             <el-tag type="success" size="small">{{ scope.row.gameVersion }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="updateDate" label="更新时间" width="180" sortable />
+        <el-table-column prop="updateDate" label="更新时间" width="150" sortable />
+        <el-table-column label="标签" width="200">
+          <template v-slot="scope">
+            <div class="tag-container">
+              <el-tag 
+                v-for="(tag, index) in getModTags(scope.row)" 
+                :key="index" 
+                size="small" 
+                :type="tag === '纯替换' ? 'danger' : getTagType(index)" 
+                effect="plain"
+                class="mod-tag"
+              >
+                {{ tag }}
+              </el-tag>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column label="文件">
           <template v-slot="scope">
             <el-collapse accordion>
@@ -60,7 +86,17 @@
                   <el-list-item v-for="(file, index) in scope.row.files" :key="index" class="file-item">
                     <div class="file-info">
                       <div class="file-source">{{ file.source }}</div>
-                      <div class="file-mode">{{ file.modeDesc }}</div>
+                      <div class="file-mode">
+                        <el-tag :type="getModeTagType(file.mode)" size="mini">
+                          {{ getModeDescription(file.mode) }}
+                        </el-tag>
+                        <span class="file-mode-params" v-if="file.val1">
+                          参数1: {{ file.val1 }}
+                        </span>
+                        <span class="file-mode-params" v-if="file.val2">
+                          参数2: {{ file.val2 }}
+                        </span>
+                      </div>
                     </div>
                     <el-button type="primary" size="small" @click="viewFileDetails(scope.row.name, file.source)">
                       查看详情
@@ -117,23 +153,42 @@ export default {
       searchQuery: '',
       currentPage: 1,
       pageSize: 10,
+      // 模式描述映射
+      modeDescriptions: {
+        'REPLACE': '完全替换',
+        'REPLACE0': '查找替换文本',
+        'REPLACE1': '替换两个标记间内容',
+        'APPEND': '末尾追加内容',
+        'INSERT': '指定位置插入内容'
+      },
+      // 模式标签类型映射
+      modeTagTypes: {
+        'REPLACE': 'danger',
+        'REPLACE0': 'warning',
+        'REPLACE1': 'warning',
+        'APPEND': 'info',
+        'INSERT': 'info'
+      }
     };
   },
   computed: {
     filteredMods() {
       if (!this.searchQuery) {
-        return this.mods;
+        return this.sortMods(this.mods);
       }
       
       const query = this.searchQuery.toLowerCase();
-      return this.mods.filter(mod => {
+      const filtered = this.mods.filter(mod => {
         return (
           mod.name.toLowerCase().includes(query) ||
           (mod.author && mod.author.toLowerCase().includes(query)) ||
           (mod.version && mod.version.toLowerCase().includes(query)) ||
-          (mod.gameVersion && mod.gameVersion.toLowerCase().includes(query))
+          (mod.gameVersion && mod.gameVersion.toLowerCase().includes(query)) ||
+          (mod.tag && mod.tag.some(tag => tag.toLowerCase().includes(query)))
         );
       });
+      
+      return this.sortMods(filtered);
     },
     paginatedData() {
       const startIndex = (this.currentPage - 1) * this.pageSize;
@@ -160,6 +215,13 @@ export default {
         this.$message.error('无法加载文件详情');
       }
     },
+    sortMods(mods) {
+      return [...mods].sort((a, b) => {
+        const recommendA = a.recommend || this.defaultRecommend;
+        const recommendB = b.recommend || this.defaultRecommend;
+        return recommendB - recommendA;
+      });
+    },
     loadMods() {
       this.loading = true;
       const requireMod = require.context('@/assets/Mods', true, /modConfig\.json$/);
@@ -171,9 +233,25 @@ export default {
         return {
           ...modConfig,
           name: modDir,
+          recommend: modConfig.recommend || this.defaultRecommend,
         };
       });
       this.loading = false;
+    },
+    getModTags(mod) {
+      const tags = [...(mod.tag || [])];
+      // 检查是否所有文件都是替换模式
+      const isAllReplace = mod.files?.every(file => 
+        file.mode === 'REPLACE' || 
+        file.mode === 'REPLACE0' || 
+        file.mode === 'REPLACE1'
+      );
+      
+      if (isAllReplace && mod.files?.length > 0) {
+        tags.unshift('纯替换');
+      }
+      
+      return tags;
     },
     handleSelectionChange(selection) {
       this.selectedMods = selection;
@@ -246,6 +324,39 @@ export default {
     resetFilters() {
       this.searchQuery = '';
       this.currentPage = 1;
+      // 重置表格筛选
+      this.$refs.table && this.$refs.table.clearFilter();
+    },
+    // 获取标签类型（循环使用不同颜色）
+    getTagType(index) {
+      const types = ['', 'success', 'info', 'warning', 'danger'];
+      return types[index % types.length];
+    },
+    // 获取模式描述
+    getModeDescription(mode) {
+      return this.modeDescriptions[mode] || mode;
+    },
+    // 获取模式标签类型
+    getModeTagType(mode) {
+      return this.modeTagTypes[mode] || '';
+    },
+    // 获取列筛选选项
+    getColumnFilters(prop) {
+      if (!this.mods || this.mods.length === 0) return [];
+      
+      // 获取唯一值
+      const uniqueValues = [...new Set(this.mods.map(mod => mod[prop]))].filter(Boolean);
+      
+      // 转换为筛选选项格式
+      return uniqueValues.map(value => ({
+        text: value,
+        value: value
+      }));
+    },
+    // 筛选处理函数
+    filterHandler(value, row, column) {
+      const property = column.property;
+      return row[property] === value;
     }
   },
 };
@@ -353,5 +464,8 @@ pre {
 
 .el-tag {
   margin-right: 5px;
+}
+.el-rate {
+  display: inline-block;
 }
 </style>

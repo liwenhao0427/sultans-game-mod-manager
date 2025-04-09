@@ -1,0 +1,20 @@
+{
+  "name": "闻鸡起舞（自动找钱与情报）",
+  "author": "萧敷艾荣",
+  "version": "1.0.0",
+  "recommend": 5,
+  "gameVersion": "17954583",
+  "updateDate": "2025.04.08",
+  "tag": ["舒适性提升"],
+  "files": [
+    {
+      "source": "event/5300066.json",
+      "mode": "INSERT",
+      "modeDesc": "替换搜索到的{val1}行",
+      "val1": "\"rite\":5000001,  //开启治理家业"
+    }, {
+      "source": "event/9000116.json",
+      "mode": "REPLACE"
+    }
+  ]
+}

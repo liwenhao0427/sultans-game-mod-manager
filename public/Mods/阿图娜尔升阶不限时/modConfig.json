@@ -1,0 +1,27 @@
+{
+  "name": "阿图娜尔升阶不限时",
+  "author": "萧敷艾荣",
+  "version": "1.0.0",
+  "gameVersion": "2025.04.08",
+  "updateDate": "2025.04.08",
+  "tag": ["舒适性提升", "难度降低"],
+  "files": [
+    {
+      "source": "rite/5000103.json",
+      "mode": "REPLACE0",
+      "val1": "\"waiting_round\""
+    },
+    {
+      "source": "rite/5000104.json",
+      "mode": "REPLACE0",
+      "val1": "\"waiting_round\""
+    },
+    {
+      "source": "rite/5000104-2.json",
+      "destination": "rite/5000104.json",
+      "mode": "REPLACE1",
+      "val1": "\"open_conditions\": [",
+      "val2": "\"random_text\":{"
+    }
+  ]
+}
