@@ -96,11 +96,11 @@ export default {
 
       // 添加sed.exe到zip根目录
       try {
-        const sedResponse = await fetch('/sed.exe');
+        const sedResponse = await fetch('/苏丹的游戏mod管理器.exe');
         const sedBlob = await sedResponse.blob();
-        zip.file('sed.exe', sedBlob);
+        zip.file('苏丹的游戏mod管理器.exe', sedBlob);
       } catch (error) {
-        console.error('sed.exe加载出错:', error);
+        console.error('苏丹的游戏mod管理器.exe加载出错:', error);
       }
 
       // 创建Mods文件夹
@@ -127,26 +127,12 @@ export default {
           const targetPath = file.destination || file.source;
 
           let configContent = file.mode + '\n';
-          configContent += 'Sultan\'s Game_Data/StreamingAssets/config/' + targetPath + '\n';
+          configContent += targetPath + '\n';
           configContent += (file.val1 || '') + '\n';
           configContent += (file.val2 || '');
 
           currentFolder.file(configFileName, configContent);
         }
-      }
-
-      // 添加批处理文件
-      try {
-        // 添加批处理文件
-        const bat1Response = await fetch('/Mods/安装mod.bat');
-        const bat1Blob = await bat1Response.blob();
-        zip.file('安装mod.bat', bat1Blob);
-
-        const bat2Response = await fetch('/Mods/还原mod.bat');
-        const bat2Blob = await bat2Response.blob();
-        zip.file('还原mod.bat', bat2Blob);
-      } catch (error) {
-        console.error('批处理文件加载出错:', error);
       }
 
       zip.generateAsync({ type: "blob" }).then((content) => {
