@@ -123,7 +123,7 @@ export default {
           currentFolder.file(fileName, fileContent);
 
           // 创建.config文件
-          const configFileName = fileName + '.config';
+          const configFileName = fileName.replace('.json', '.config');
           const targetPath = file.destination || file.source;
 
           let configContent = file.mode + '\n';
