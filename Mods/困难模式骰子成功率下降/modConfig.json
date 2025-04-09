@@ -2,8 +2,10 @@
   "name": "困难模式骰子成功率下降",
   "author": "萧敷艾荣",
   "version": "1.0.0",
-  "gameVersion": "17954583",
+  "gameVersion": "2025.04.08",
   "updateDate": "2025.04.08",
+  "tag": ["难度提升"],
+  "remark": "难度提升mod",
   "files": [
     {
       "source": "init/1.json",
