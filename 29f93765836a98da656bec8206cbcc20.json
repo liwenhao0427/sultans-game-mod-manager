@@ -1,0 +1,24 @@
+{
+  "name": "平衡版",
+  "author": "我国就连线",
+  "version": "1.0.0",
+  "gameVersion": "2025.04.08",
+  "updateDate": "2025.04.10",
+  "tag": [
+    "自动导入"
+  ],
+  "source": {
+    "name": "苏丹的游戏吧",
+    "url": "https://tieba.baidu.com/p/9633271389"
+  },
+  "files": [
+    {
+      "source": "cards.json",
+      "mode": "REPLACE"
+    },
+    {
+      "source": "upgrade.json",
+      "mode": "REPLACE"
+    }
+  ]
+}
