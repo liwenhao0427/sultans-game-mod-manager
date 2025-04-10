@@ -56,10 +56,12 @@
 
     <el-card class="table-card">
       <el-table
+        ref="table"
         :data="paginatedData"
         style="width: 100%"
         border
         @selection-change="handleSelectionChange"
+        @filter-change="handleFilterChange"
         :default-sort="{prop: 'recommend', order: 'descending'}"
         v-loading="loading"
         row-key="name"
@@ -227,6 +229,7 @@ export default {
   },
   data() {
     return {
+      columnFilters: {}, // 存储当前应用的列筛选
       authorColors: {}, // 用于存储作者对应的颜色类型
       defaultRecommend: 3, // 默认推荐值
       fileDetailsVisible: false,
@@ -266,22 +269,41 @@ export default {
   },
   computed: {
     filteredMods() {
-      if (!this.searchQuery) {
-        return this.sortMods(this.mods);
+      let result = this.mods;
+      
+      // 应用搜索筛选
+      if (this.searchQuery) {
+        const query = this.searchQuery.toLowerCase();
+        result = result.filter(mod => {
+          return (
+            mod.name.toLowerCase().includes(query) ||
+            (mod.author && mod.author.toLowerCase().includes(query)) ||
+            (mod.gameVersion && mod.gameVersion.toLowerCase().includes(query)) ||
+            (mod.tag && mod.tag.some(tag => tag.toLowerCase().includes(query)))
+          );
+        });
       }
       
-      const query = this.searchQuery.toLowerCase();
-      const filtered = this.mods.filter(mod => {
-        return (
-          mod.name.toLowerCase().includes(query) ||
-          (mod.author && mod.author.toLowerCase().includes(query)) ||
-          (mod.version && mod.version.toLowerCase().includes(query)) ||
-          (mod.gameVersion && mod.gameVersion.toLowerCase().includes(query)) ||
-          (mod.tag && mod.tag.some(tag => tag.toLowerCase().includes(query)))
-        );
-      });
+      // 应用表格列筛选
+      if (this.columnFilters && Object.keys(this.columnFilters).length > 0) {
+        Object.entries(this.columnFilters).forEach(([key, values]) => {
+          if (values && values.length > 0) {
+            result = result.filter(mod => {
+              if (key === 'tag') {
+                // 标签特殊处理
+                const modTags = this.getModTags(mod);
+                return values.some(value => modTags.includes(value));
+              } else {
+                // 普通列筛选
+                return values.includes(mod[key]);
+              }
+            });
+          }
+        });
+      }
       
-      return this.sortMods(filtered);
+      // 排序
+      return this.sortMods(result);
     },
     paginatedData() {
       const startIndex = (this.currentPage - 1) * this.pageSize;
@@ -291,8 +313,36 @@ export default {
   },
   mounted() {
     this.loadMods();
+    
+    // Use setTimeout to ensure DOM is fully rendered
+    setTimeout(() => {
+      if (this.$refs.table) {
+        try {
+          this.$refs.table.doLayout();
+        } catch (error) {
+          console.warn('Table layout calculation deferred:', error);
+        }
+      }
+    }, 500);
   },
   methods: {
+    // 处理表格筛选变化
+    handleFilterChange(filters) {
+      // 更新筛选状态
+      Object.keys(filters).forEach(key => {
+        if (filters[key] && filters[key].length > 0) {
+          this.columnFilters[key] = filters[key];
+        } else {
+          // 如果筛选被清除，从状态中移除
+          if (this.columnFilters[key]) {
+            delete this.columnFilters[key];
+          }
+        }
+      });
+      
+      // 重置到第一页
+      this.currentPage = 1;
+    },
     // 显示导出对话框
     showExportDialog() {
       // 设置默认文件名
@@ -355,12 +405,21 @@ export default {
         throw new Error(`无法加载文件: ${modName}/${fileSource}`);
       }
     },
-    // 修改排序方法，使用recommend字段
+    // 修改排序方法，使用recommend字段，相同时按日期倒序
     sortMods(mods) {
       return [...mods].sort((a, b) => {
         const recommendA = a.recommend !== undefined ? a.recommend : this.defaultRecommend;
         const recommendB = b.recommend !== undefined ? b.recommend : this.defaultRecommend;
-        return recommendB - recommendA;
+        
+        // 如果推荐度不同，按推荐度排序
+        if (recommendB !== recommendA) {
+          return recommendB - recommendA;
+        }
+        
+        // 如果推荐度相同，按更新日期倒序排序
+        const dateA = a.updateDate || '';
+        const dateB = b.updateDate || '';
+        return dateB.localeCompare(dateA);
       });
     },
 
@@ -392,11 +451,7 @@ export default {
       }));
     },
     
-    // 标签筛选处理函数
-    filterTagHandler(value, row) {
-      const tags = this.getModTags(row);
-      return tags.includes(value);
-    },
+
   
     loadMods() {
       this.loading = true;
@@ -705,10 +760,39 @@ export default {
       this.searchQuery = '';
     },
     resetFilters() {
+      // 先清空搜索和筛选状态
       this.searchQuery = '';
       this.currentPage = 1;
-      // 重置表格筛选
-      this.$refs.table && this.$refs.table.clearFilter();
+      this.columnFilters = {}; // 清空所有筛选状态
+      
+      // 使用nextTick确保状态更新后再操作DOM
+      this.$nextTick(() => {
+        if (this.$refs.table) {
+          try {
+            // 获取表格实例
+            const table = this.$refs.table;
+            
+            // 清除所有列的筛选
+            const columnKeys = ['author', 'gameVersion', 'tag'];
+            columnKeys.forEach(key => {
+              table.clearFilter(key);
+            });
+            
+            // 强制更新表格数据
+            this.$forceUpdate();
+            
+            // 额外延时确保UI更新
+            setTimeout(() => {
+              // 再次强制更新组件
+              this.$forceUpdate();
+              // 重新布局表格
+              table.doLayout();
+            }, 200);
+          } catch (error) {
+            console.warn('清除表格筛选时出错:', error);
+          }
+        }
+      });
     },
     // 获取标签类型（循环使用不同颜色）
     getTagType(index) {
@@ -736,10 +820,37 @@ export default {
         value: value
       }));
     },
-    filterHandler(value, row, column) {
-      const property = column.property;
-      return row[property] === value;
-    }
+     // 修改筛选处理方法
+     filterHandler(value, row, column) {
+      const property = column.property || column.columnKey;
+      
+      // 更新筛选状态
+      if (!this.columnFilters[property]) {
+        this.columnFilters[property] = [];
+      }
+      
+      // 如果值不在筛选列表中，添加它
+      if (!this.columnFilters[property].includes(value)) {
+        this.columnFilters[property].push(value);
+      }
+      
+      return true; // 返回true，因为我们在computed中处理筛选
+    },
+    
+    // 标签筛选处理函数
+    filterTagHandler(value) {
+      // 更新筛选状态
+      if (!this.columnFilters['tag']) {
+        this.columnFilters['tag'] = [];
+      }
+      
+      // 如果值不在筛选列表中，添加它
+      if (!this.columnFilters['tag'].includes(value)) {
+        this.columnFilters['tag'].push(value);
+      }
+      
+      return true; // 返回true，因为我们在computed中处理筛选
+    },
   }
 };
 </script>
