@@ -81,7 +81,7 @@
             />
           </template>
         </el-table-column> -->
-        <el-table-column prop="author" label="作者" width="150" sortable column-key="author" :filters="getColumnFilters('author')" :filter-method="filterHandler">
+        <el-table-column prop="author" label="作者" width="100" sortable column-key="author" :filters="getColumnFilters('author')" :filter-method="filterHandler">
           <template v-slot="scope">
             <el-tag size="small">{{ scope.row.author }}</el-tag>
             <!-- 添加source链接 -->
@@ -93,13 +93,30 @@
             </a>
           </template>
         </el-table-column>
-        <el-table-column prop="version" label="版本" width="100" sortable column-key="version" :filters="getColumnFilters('version')" :filter-method="filterHandler" />
+        <el-table-column prop="version" label="版本" width="80" column-key="version" :filters="getColumnFilters('version')" :filter-method="filterHandler" />
         <el-table-column prop="gameVersion" label="游戏版本" width="120" sortable column-key="gameVersion" :filters="getColumnFilters('gameVersion')" :filter-method="filterHandler">
           <template v-slot="scope">
             <el-tag type="success" size="small">{{ scope.row.gameVersion }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="updateDate" label="更新时间" width="150" sortable />
+        
+        <!-- 添加来源列 -->
+        <el-table-column label="来源" width="150">
+          <template v-slot="scope">
+            <a 
+              v-if="scope.row.source && scope.row.source.url" 
+              :href="scope.row.source.url" 
+              target="_blank" 
+              class="source-link"
+            >
+              {{ scope.row.source?.name || '未知来源' }}
+              <i class="el-icon-link"></i>
+            </a>
+            <span v-else>未知来源</span>
+          </template>
+        </el-table-column>
+        
+        <el-table-column prop="updateDate" label="更新时间" width="120" sortable />
         <el-table-column label="标签" width="200">
           <template v-slot="scope">
             <div class="tag-container">
@@ -121,10 +138,17 @@
             <el-collapse accordion>
               <el-collapse-item>
                 <template #title>
-                  <span class="file-count">{{ scope.row.files.length }} 个文件</span>
+                  <span class="file-count" >{{ scope.row.files.length }} 个文件</span>
+<!--                  <span class="file-count" v-else>-->
+<!--                    <el-tag type="info" size="small">压缩包</el-tag> {{ scope.row.zipFile }}-->
+<!--                  </span>-->
                 </template>
-                <el-list>
+                <div v-if="scope.row.zipFile" class="zip-file-notice">
+                  <i class="el-icon-info"></i> 该MOD包含大量文件，已打包为压缩文件。导出时会自动解压并包含所有文件。
+                </div>
+                <el-list v-else>
                   <el-list-item v-for="(file, index) in scope.row.files" :key="index" class="file-item">
+                    <!-- 原有的文件列表内容 -->
                     <div class="file-info">
                       <div class="file-source">{{ file.source }}</div>
                       <div class="file-mode">
@@ -380,6 +404,13 @@ export default {
     },
     getModTags(mod) {
       const tags = [...(mod.tag || [])];
+      
+      // 如果有zipFile，直接添加"压缩包"标签
+      if (mod.zipFile) {
+        tags.unshift('压缩包');
+        return tags;
+      }
+      
       // 检查是否所有文件都是替换模式
       const isAllReplace = mod.files?.every(file => 
         file.mode === 'REPLACE' || 
@@ -523,63 +554,109 @@ export default {
           console.error(`无法加载modConfig.json: ${mod.name}`, error);
         }
         
-        // 添加其他文件
-        for (const file of mod.files) {
+        // 检查是否有zipFile属性
+        if (mod.zipFile) {
           try {
-            const fileExt = file.source.split('.').pop().toLowerCase();
-            let fileContent;
+            // 加载zip文件
+            const zipFilePath = require(`!!file-loader?esModule=false!@/assets/Mods/${mod.name}/${mod.zipFile}`);
+            const zipFileResponse = await fetch(zipFilePath);
+            const zipFileBlob = await zipFileResponse.blob();
             
-            if (fileExt === 'json' || fileExt === 'txt' || fileExt === 'config') {
-              // 所有文本文件都使用raw-loader，并指定esModule: false
-              const textModule = require(`!!raw-loader?esModule=false!@/assets/Mods/${mod.name}/${file.source}`);
-              fileContent = textModule;
-            } else {
-              // 其他类型文件，尝试作为二进制处理
-              const filePath = require(`!!file-loader?esModule=false!@/assets/Mods/${mod.name}/${file.source}`);
-              const response = await fetch(filePath);
-              fileContent = await response.blob();
+            // 解压zip文件
+            const modZip = await JSZip.loadAsync(zipFileBlob);
+            
+            // 将解压后的文件添加到导出包中
+            for (const filename in modZip.files) {
+              if (!modZip.files[filename].dir) {
+                const fileContent = await modZip.files[filename].async('blob');
+                modFolder.file(filename, fileContent);
+              } else {
+                // 创建目录
+                modFolder.folder(filename);
+              }
             }
             
-            // 创建目录结构
-            let currentFolder = modFolder;
-            const pathSegments = file.source.split('/').slice(0, -1);
-            for (const segment of pathSegments) {
-              currentFolder = currentFolder.folder(segment);
-            }
-  
-            const fileName = file.source.split('/').pop();
-            currentFolder.file(fileName, fileContent);
-            
-            // 移除创建.config文件的逻辑
+            this.$message.success(`已从压缩包加载MOD: ${mod.name}`);
           } catch (error) {
-            console.error(`加载文件出错: ${mod.name}/${file.source}`, error);
-            this.$message.warning(`无法加载文件: ${file.source}`);
+            console.error(`无法加载或解压zip文件: ${mod.name}/${mod.zipFile}`, error);
+            this.$message.error(`无法加载压缩包: ${mod.zipFile}`);
+            
+            // 如果zip文件加载失败，回退到常规方式加载文件
+            await this.addModFilesRegular(mod, modFolder);
           }
+        } else {
+          // 常规方式加载文件
+          await this.addModFilesRegular(mod, modFolder);
         }
       }
-  
-      // 使用用户指定的文件名
-      const fileName = this.exportOptions.fileName.endsWith('.zip') 
-        ? this.exportOptions.fileName 
-        : `${this.exportOptions.fileName}.zip`;
-  
-      zip.generateAsync({ type: "blob" }).then((content) => {
-        saveAs(content, fileName);
+      
+      try {
+        // 生成zip文件并下载
+        const content = await zip.generateAsync({
+          type: 'blob',
+          compression: 'DEFLATE',
+          compressionOptions: {
+            level: 9
+          }
+        });
+        
+        saveAs(content, this.exportOptions.fileName);
+        this.$message.success('导出成功！');
+      } catch (error) {
+        console.error('导出出错:', error);
+        this.$message.error('导出失败，请查看控制台获取详细信息');
+      } finally {
         this.loading = false;
-        
-        // 构建成功消息
-        let successMsg = `已成功导出 ${this.selectedMods.length} 个Mod`;
-        if (this.exportOptions.includeManager) {
-          successMsg += '，包含MOD管理器';
-        }
-        if (this.exportOptions.includeScript) {
-          successMsg += '，包含安装脚本';
-        }
-        
-        this.$message.success(successMsg);
-      });
+      }
     },
-    handleSizeChange(val) {
+    
+    // 添加新方法：常规方式加载MOD文件
+    async addModFilesRegular(mod, modFolder) {
+      // 如果有zipFile属性，不处理files
+      if(mod.zipFile){
+        // 这里不需要做任何事情，因为导出方法中已经处理了zipFile
+        return;
+      }
+      
+      // 添加其他文件
+      for (const file of mod.files) {
+        try {
+          const fileExt = file.source.split('.').pop().toLowerCase();
+          let fileContent;
+          
+          if (fileExt === 'json' || fileExt === 'txt' || fileExt === 'config') {
+            // 所有文本文件都使用raw-loader，并指定esModule: false
+            const textModule = require(`!!raw-loader?esModule=false!@/assets/Mods/${mod.name}/${file.source}`);
+            fileContent = textModule;
+          } else {
+            // 其他类型文件，尝试作为二进制处理
+            const filePath = require(`!!file-loader?esModule=false!@/assets/Mods/${mod.name}/${file.source}`);
+            const response = await fetch(filePath);
+            fileContent = await response.blob();
+          }
+          
+          // 创建目录结构
+          let currentFolder = modFolder;
+          const pathSegments = file.source.split('/').slice(0, -1);
+          const fileName = file.source.split('/').pop();
+          
+          if (pathSegments.length > 0) {
+            // 创建嵌套文件夹
+            let folderPath = '';
+            for (const segment of pathSegments) {
+              folderPath += (folderPath ? '/' : '') + segment;
+              currentFolder = modFolder.folder(folderPath);
+            }
+          }
+          
+          // 添加文件到对应文件夹
+          currentFolder.file(fileName, fileContent);
+        } catch (error) {
+          console.error(`无法加载文件: ${mod.name}/${file.source}`, error);
+        }
+      }
+    },
+  handleSizeChange(val) {
       this.pageSize = val;
       this.currentPage = 1;
     },
@@ -862,5 +939,35 @@ export default {
   margin-left: 8px;
   color: #409EFF;
   font-size: 14px;
+}
+
+.source-link {
+  color: #409EFF;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.source-link:hover {
+  text-decoration: underline;
+}
+
+.source-link .el-icon-link {
+  font-size: 14px;
+}
+
+.zip-file-notice {
+  padding: 15px;
+  background-color: #f0f9eb;
+  border-radius: 4px;
+  color: #67c23a;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.zip-file-notice .el-icon-info {
+  font-size: 18px;
 }
 </style>
