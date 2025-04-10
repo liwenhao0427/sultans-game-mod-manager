@@ -14,13 +14,39 @@
     </div>
 
     <div class="toolbar">
-      <el-button type="primary" @click="exportSelected" :disabled="selectedMods.length === 0">
+      <el-button type="primary" @click="showExportDialog" :disabled="selectedMods.length === 0">
         <i class="el-icon-download"></i> 导出选中 ({{ selectedMods.length }})
       </el-button>
       <el-button @click="resetFilters" plain>
         <i class="el-icon-refresh"></i> 重置筛选
       </el-button>
     </div>
+
+    <!-- 导出选项对话框 -->
+    <el-dialog
+      v-model="exportDialogVisible"
+      title="导出选项"
+      width="400px"
+    >
+      <el-form label-position="top">
+        <el-form-item label="导出内容">
+          <el-checkbox v-model="exportOptions.includeMods" disabled>MOD文件</el-checkbox>
+          <el-checkbox v-model="exportOptions.includeManager">MOD管理器(exe)</el-checkbox>
+          <el-checkbox v-model="exportOptions.includeScript">MOD安装脚本(py)</el-checkbox>
+        </el-form-item>
+        <el-form-item label="文件名">
+          <el-input v-model="exportOptions.fileName" placeholder="导出文件名"></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="exportDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="exportSelected">
+            确认导出
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
 
     <el-card class="table-card">
       <el-table
@@ -141,8 +167,15 @@
 <script>
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+// Remove the unused import
+// import { Search } from '@element-plus/icons-vue';
 
 export default {
+  name: 'App',
+  components: {
+    // Remove the unused component registration
+    // Search
+  },
   data() {
     return {
       fileDetailsVisible: false,
@@ -153,6 +186,14 @@ export default {
       searchQuery: '',
       currentPage: 1,
       pageSize: 10,
+      // 新增导出选项相关数据
+      exportDialogVisible: false,
+      exportOptions: {
+        includeMods: true, // 默认必须包含MOD文件
+        includeManager: true, // 默认包含管理器
+        includeScript: false, // 默认不包含脚本
+        fileName: 'mods.zip'
+      },
       // 模式描述映射
       modeDescriptions: {
         'REPLACE': '完全替换',
@@ -200,19 +241,62 @@ export default {
     this.loadMods();
   },
   methods: {
+    // 显示导出对话框
+    showExportDialog() {
+      // 设置默认文件名
+      this.exportOptions.fileName = `mods_${this.selectedMods.length}.zip`;
+      this.exportDialogVisible = true;
+    },
+    
     async viewFileDetails(modName, fileSource) {
-      const filePath = `/Mods/${modName}/${fileSource}`;
-      console.log(filePath)
       try {
-        const response = await fetch(filePath);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch file: ${filePath}`);
+        // 使用require动态导入文件内容
+        const fileContent = await this.getFileContent(modName, fileSource);
+        
+        // 只有modConfig.json才尝试格式化为JSON
+        if (fileSource === 'modConfig.json') {
+          try {
+            const jsonObj = JSON.parse(fileContent);
+            this.fileContent = JSON.stringify(jsonObj, null, 2);
+          } catch (e) {
+            // 如果解析失败，仍然显示原始文本
+            this.fileContent = fileContent;
+          }
+        } else {
+          // 其他JSON文件直接显示为文本
+          this.fileContent = fileContent;
         }
-        this.fileContent = await response.text();
+        
         this.fileDetailsVisible = true;
       } catch (error) {
-        console.error('Error fetching file details:', error);
+        console.error('Error loading file details:', error);
         this.$message.error('无法加载文件详情');
+      }
+    },
+    
+    // 修改从assets目录获取文件内容的方法
+    async getFileContent(modName, fileSource) {
+      try {
+        // 根据文件扩展名选择不同的加载方式
+        const fileExt = fileSource.split('.').pop().toLowerCase();
+        
+        if (fileExt === 'json' || fileExt === 'txt' || fileExt === 'config') {
+          // 所有文本文件都使用raw-loader，并指定esModule: false
+          try {
+            const textContent = require(`!!raw-loader?esModule=false!@/assets/Mods/${modName}/${fileSource}`);
+            return textContent; // 不再需要 .default，因为设置了 esModule: false
+          } catch (error) {
+            console.error(`无法加载文件: ${modName}/${fileSource}`, error);
+            throw error;
+          }
+        } else {
+          // 其他类型文件
+          this.$message.warning(`不支持查看此类型文件: ${fileExt}`);
+          return `[不支持查看此类型文件: ${fileExt}]`;
+        }
+      } catch (error) {
+        console.error(`无法加载文件: @/assets/Mods/${modName}/${fileSource}`, error);
+        throw new Error(`无法加载文件: ${modName}/${fileSource}`);
       }
     },
     sortMods(mods) {
@@ -224,18 +308,44 @@ export default {
     },
     loadMods() {
       this.loading = true;
-      const requireMod = require.context('@/assets/Mods', true, /modConfig\.json$/);
-      const modFiles = requireMod.keys();
-
-      this.mods = modFiles.map((filePath) => {
-        const modConfig = requireMod(filePath);
-        const modDir = filePath.split('/')[1];
-        return {
-          ...modConfig,
-          name: modDir,
-          recommend: modConfig.recommend || this.defaultRecommend,
-        };
-      });
+      try {
+        // 使用require.context获取所有modConfig.json文件
+        const requireMod = require.context('@/assets/Mods', true, /modConfig\.json$/);
+        const modFiles = requireMod.keys();
+  
+        this.mods = modFiles.map((filePath) => {
+          try {
+            // 获取文本内容
+            const modConfigText = requireMod(filePath);
+            
+            // 手动解析JSON
+            const modConfig = JSON.parse(modConfigText);
+            const modDir = filePath.split('/')[1];
+            return {
+              ...modConfig,
+              name: modDir,
+              recommend: modConfig.recommend || this.defaultRecommend,
+            };
+          } catch (error) {
+            console.error(`解析modConfig.json失败: ${filePath}`, error);
+            // 返回一个基本的mod对象，避免整个加载过程失败
+            const modDir = filePath.split('/')[1];
+            return {
+              name: modDir,
+              author: '未知',
+              version: '未知',
+              gameVersion: '未知',
+              updateDate: '未知',
+              files: [],
+              tag: ['加载失败'],
+              recommend: this.defaultRecommend,
+            };
+          }
+        });
+      } catch (error) {
+        console.error('加载Mods失败:', error);
+        this.mods = [];
+      }
       this.loading = false;
     },
     getModTags(mod) {
@@ -256,60 +366,118 @@ export default {
     handleSelectionChange(selection) {
       this.selectedMods = selection;
     },
+    // 修改导出方法
     async exportSelected() {
       this.loading = true;
+      this.exportDialogVisible = false;
+      
       const zip = new JSZip();
-
-      // 添加sed.exe到zip根目录
-      try {
-        const sedResponse = await fetch('/苏丹的游戏mod管理器.exe');
-        const sedBlob = await sedResponse.blob();
-        zip.file('苏丹的游戏mod管理器.exe', sedBlob);
-      } catch (error) {
-        console.error('苏丹的游戏mod管理器.exe加载出错:', error);
-      }
-
+  
       // 创建Mods文件夹
       const modsFolder = zip.folder("Mods");
-
-      for (const mod of this.selectedMods) {
-        const modFolder = modsFolder.folder(mod.name);
-        for (const file of mod.files) {
-          const filePath = `/Mods/${mod.name}/${file.source}`;
-          const fileContent = await this.loadFile(filePath);
-
-          // 创建目录结构
-          let currentFolder = modFolder;
-          const pathSegments = file.source.split('/').slice(0, -1);
-          for (const segment of pathSegments) {
-            currentFolder = currentFolder.folder(segment);
-          }
-
-          const fileName = file.source.split('/').pop();
-          currentFolder.file(fileName, fileContent);
-
-          // 创建.config文件
-          const configFileName = fileName.replace('.json', '.config');
-          const targetPath = file.destination || file.source;
-
-          let configContent = file.mode + '\n';
-          configContent += targetPath + '\n';
-          configContent += (file.val1 || '') + '\n';
-          configContent += (file.val2 || '');
-
-          currentFolder.file(configFileName, configContent);
+  
+      // 根据选项添加主程序文件
+      if (this.exportOptions.includeManager) {
+        try {
+          // 二进制文件需要使用file-loader，并指定esModule: false
+          const mainAppPath = require('!!file-loader?esModule=false!@/assets/苏丹的游戏mod管理器.exe');
+          const mainAppResponse = await fetch(mainAppPath);
+          const mainAppBlob = await mainAppResponse.blob();
+          zip.file('苏丹的游戏mod管理器.exe', mainAppBlob);
+        } catch (error) {
+          console.error('主程序加载出错:', error);
+          this.$message.warning('无法加载主程序文件，但Mod文件将正常导出');
         }
       }
-
+      
+      // 根据选项添加安装脚本
+      if (this.exportOptions.includeScript) {
+        try {
+          const scriptPath = require('!!raw-loader?esModule=false!@/assets/mod_installer.py');
+          zip.file('mod_installer.py', scriptPath);
+        } catch (error) {
+          console.error('安装脚本加载出错:', error);
+          this.$message.warning('无法加载安装脚本，但其他文件将正常导出');
+        }
+      }
+  
+      // 添加MOD文件
+      for (const mod of this.selectedMods) {
+        const modFolder = modsFolder.folder(mod.name);
+        
+        // 添加modConfig.json
+        try {
+          // 作为文本加载modConfig.json，并指定esModule: false
+          const modConfigText = require(`!!raw-loader?esModule=false!@/assets/Mods/${mod.name}/modConfig.json`);
+          modFolder.file('modConfig.json', modConfigText);
+        } catch (error) {
+          console.error(`无法加载modConfig.json: ${mod.name}`, error);
+        }
+        
+        // 添加其他文件
+        for (const file of mod.files) {
+          try {
+            const fileExt = file.source.split('.').pop().toLowerCase();
+            let fileContent;
+            
+            if (fileExt === 'json' || fileExt === 'txt' || fileExt === 'config') {
+              // 所有文本文件都使用raw-loader，并指定esModule: false
+              const textModule = require(`!!raw-loader?esModule=false!@/assets/Mods/${mod.name}/${file.source}`);
+              fileContent = textModule;
+            } else {
+              // 其他类型文件，尝试作为二进制处理
+              const filePath = require(`!!file-loader?esModule=false!@/assets/Mods/${mod.name}/${file.source}`);
+              const response = await fetch(filePath);
+              fileContent = await response.blob();
+            }
+            
+            // 创建目录结构
+            let currentFolder = modFolder;
+            const pathSegments = file.source.split('/').slice(0, -1);
+            for (const segment of pathSegments) {
+              currentFolder = currentFolder.folder(segment);
+            }
+  
+            const fileName = file.source.split('/').pop();
+            currentFolder.file(fileName, fileContent);
+  
+            // 创建.config文件
+            const configFileName = fileName.replace('.json', '.config');
+            const targetPath = file.destination || file.source;
+  
+            let configContent = file.mode + '\n';
+            configContent += targetPath + '\n';
+            configContent += (file.val1 || '') + '\n';
+            configContent += (file.val2 || '');
+  
+            currentFolder.file(configFileName, configContent);
+          } catch (error) {
+            console.error(`加载文件出错: ${mod.name}/${file.source}`, error);
+            this.$message.warning(`无法加载文件: ${file.source}`);
+          }
+        }
+      }
+  
+      // 使用用户指定的文件名
+      const fileName = this.exportOptions.fileName.endsWith('.zip') 
+        ? this.exportOptions.fileName 
+        : `${this.exportOptions.fileName}.zip`;
+  
       zip.generateAsync({ type: "blob" }).then((content) => {
-        saveAs(content, "mods.zip");
+        saveAs(content, fileName);
         this.loading = false;
-        this.$message.success(`已成功导出 ${this.selectedMods.length} 个Mod`);
+        
+        // 构建成功消息
+        let successMsg = `已成功导出 ${this.selectedMods.length} 个Mod`;
+        if (this.exportOptions.includeManager) {
+          successMsg += '，包含MOD管理器';
+        }
+        if (this.exportOptions.includeScript) {
+          successMsg += '，包含安装脚本';
+        }
+        
+        this.$message.success(successMsg);
       });
-    },
-    async loadFile(filePath) {
-      const response = await fetch(filePath);
-      return response.blob();
     },
     handleSizeChange(val) {
       this.pageSize = val;
@@ -353,119 +521,20 @@ export default {
         value: value
       }));
     },
-    // 筛选处理函数
     filterHandler(value, row, column) {
       const property = column.property;
       return row[property] === value;
     }
-  },
+  }
 };
 </script>
 
-<style scoped>
-.mod-manager-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-}
+<style>
+/* ... existing styles ... */
 
-.header {
+/* 添加导出对话框样式 */
+.dialog-footer {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-h1 {
-  color: #409EFF;
-  font-size: 28px;
-  margin: 0;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.search-bar {
-  width: 300px;
-}
-
-.toolbar {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 20px;
-  gap: 10px;
-}
-
-.table-card {
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-}
-
-.mod-name {
-  font-weight: bold;
-  color: #409EFF;
-}
-
-.file-count {
-  color: #606266;
-  font-size: 14px;
-}
-
-.file-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #EBEEF5;
-}
-
-.file-item:last-child {
-  border-bottom: none;
-}
-
-.file-info {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.file-source {
-  font-weight: bold;
-  color: #303133;
-}
-
-.file-mode {
-  font-size: 12px;
-  color: #909399;
-}
-
-.pagination-container {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-}
-
-.file-details-dialog .file-content-container {
-  max-height: 70vh;
-  overflow-y: auto;
-  background-color: #f5f7fa;
-  border-radius: 4px;
-  padding: 15px;
-}
-
-pre {
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 14px;
-  line-height: 1.5;
-  color: #303133;
-}
-
-.el-tag {
-  margin-right: 5px;
-}
-.el-rate {
-  display: inline-block;
+  justify-content: flex-end;
 }
 </style>
