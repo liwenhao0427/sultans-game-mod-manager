@@ -1,7 +1,7 @@
 <template>
   <div class="mod-manager-container">
     <div class="header">
-      <h1>Mod 管理程序</h1>
+      <h1>苏丹的游戏 MOD 管理器</h1>
       <div class="search-bar">
         <el-input
           v-model="searchQuery"
@@ -9,17 +9,23 @@
           prefix-icon="el-icon-search"
           clearable
           @clear="handleSearchClear"
+          style="width: 300px;" 
         />
       </div>
     </div>
 
     <div class="toolbar">
-      <el-button type="primary" @click="showExportDialog" :disabled="selectedMods.length === 0">
-        <i class="el-icon-download"></i> 导出选中 ({{ selectedMods.length }})
-      </el-button>
-      <el-button @click="resetFilters" plain>
-        <i class="el-icon-refresh"></i> 重置筛选
-      </el-button>
+      <div>
+        <el-button type="primary" @click="showExportDialog" :disabled="selectedMods.length === 0">
+          <i class="el-icon-download"></i> 导出选中 ({{ selectedMods.length }})
+        </el-button>
+        <el-button @click="resetFilters" plain>
+          <i class="el-icon-refresh"></i> 重置筛选
+        </el-button>
+      </div>
+      <div>
+        <el-tag type="info">总计 {{ mods.length }} 个MOD</el-tag>
+      </div>
     </div>
 
     <!-- 导出选项对话框 -->
@@ -56,6 +62,8 @@
         @selection-change="handleSelectionChange"
         :default-sort="{prop: 'recommend', order: 'descending'}"
         v-loading="loading"
+        row-key="name"
+        stripe
       >
         <el-table-column type="selection" width="55" />
         <el-table-column prop="name" label="Mod 名称" width="180" sortable>
@@ -144,6 +152,7 @@
           :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="filteredMods.length"
+          background
         />
       </div>
     </el-card>
@@ -161,6 +170,10 @@
         <el-button @click="fileDetailsVisible = false">关闭</el-button>
       </template>
     </el-dialog>
+    
+    <div class="footer">
+      <p>苏丹的游戏 MOD 管理器 &copy; 2023</p>
+    </div>
   </div>
 </template>
 
@@ -440,17 +453,8 @@ export default {
   
             const fileName = file.source.split('/').pop();
             currentFolder.file(fileName, fileContent);
-  
-            // 创建.config文件
-            const configFileName = fileName.replace('.json', '.config');
-            const targetPath = file.destination || file.source;
-  
-            let configContent = file.mode + '\n';
-            configContent += targetPath + '\n';
-            configContent += (file.val1 || '') + '\n';
-            configContent += (file.val2 || '');
-  
-            currentFolder.file(configFileName, configContent);
+            
+            // 移除创建.config文件的逻辑
           } catch (error) {
             console.error(`加载文件出错: ${mod.name}/${file.source}`, error);
             this.$message.warning(`无法加载文件: ${file.source}`);
@@ -530,7 +534,194 @@ export default {
 </script>
 
 <style>
-/* ... existing styles ... */
+.mod-manager-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.header h1 {
+  margin: 0;
+  color: #409EFF;
+  font-size: 28px;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.table-card {
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.mod-name {
+  font-weight: bold;
+  color: #303133;
+}
+
+.tag-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.mod-tag {
+  margin-right: 5px;
+}
+
+.file-count {
+  font-size: 14px;
+  color: #606266;
+}
+
+.file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.file-item:last-child {
+  border-bottom: none;
+}
+
+.file-info {
+  flex: 1;
+}
+
+.file-source {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #303133;
+}
+
+.file-mode {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.file-mode-params {
+  font-size: 12px;
+  color: #909399;
+  margin-left: 5px;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.file-content-container {
+  background-color: #f8f8f8;
+  padding: 15px;
+  border-radius: 4px;
+  max-height: 500px;
+  overflow: auto;
+}
+
+.file-content-container pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* 美化表格 */
+.el-table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.el-table th {
+  background-color: #f5f7fa;
+  color: #606266;
+  font-weight: bold;
+}
+
+.el-table--border th, .el-table--border td {
+  border-right: 1px solid #ebeef5;
+}
+
+/* 美化按钮 */
+.el-button {
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.el-button--primary {
+  background-color: #409EFF;
+}
+
+.el-button--primary:hover {
+  background-color: #66b1ff;
+}
+
+/* 美化对话框 */
+.el-dialog {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.el-dialog__header {
+  background-color: #f5f7fa;
+  padding: 15px 20px;
+}
+
+.el-dialog__title {
+  font-weight: bold;
+  color: #303133;
+}
+
+.el-dialog__body {
+  padding: 20px;
+}
+
+/* 美化折叠面板 */
+.el-collapse {
+  border: none;
+}
+
+.el-collapse-item__header {
+  background-color: #f5f7fa;
+  padding: 0 15px;
+  border-radius: 4px;
+  height: 40px;
+  line-height: 40px;
+}
+
+.el-collapse-item__content {
+  padding: 15px;
+  background-color: #fafafa;
+  border-radius: 0 0 4px 4px;
+}
 
 /* 添加导出对话框样式 */
 .dialog-footer {
