@@ -84,6 +84,13 @@
         <el-table-column prop="author" label="作者" width="150" sortable column-key="author" :filters="getColumnFilters('author')" :filter-method="filterHandler">
           <template v-slot="scope">
             <el-tag size="small">{{ scope.row.author }}</el-tag>
+            <!-- 添加source链接 -->
+            <a v-if="scope.row.source && scope.row.source.url" 
+               :href="scope.row.source.url" 
+               target="_blank" 
+               class="source-link-icon">
+              <i class="el-icon-link"></i>
+            </a>
           </template>
         </el-table-column>
         <el-table-column prop="version" label="版本" width="100" sortable column-key="version" :filters="getColumnFilters('version')" :filter-method="filterHandler" />
@@ -163,6 +170,11 @@
       width="80%"
       class="file-details-dialog"
     >
+      <!-- 添加source信息展示 -->
+      <div v-if="currentModSource" class="mod-source-info">
+        <span>来源: </span>
+        <a :href="currentModSource.url" target="_blank" class="source-link">{{ currentModSource.name || currentModSource.url }}</a>
+      </div>
       <div class="file-content-container">
         <pre>{{ fileContent }}</pre>
       </div>
@@ -172,7 +184,7 @@
     </el-dialog>
     
     <div class="footer">
-      <p>苏丹的游戏 MOD 管理器 &copy; 2023</p>
+      <p>苏丹的游戏 MOD 管理器 &copy; 2025 by <a href="https://github.com/liwenhao0427/sultans-game-mod-manager" target="_blank">liwenhao0427</a></p>
     </div>
   </div>
 </template>
@@ -193,6 +205,7 @@ export default {
     return {
       fileDetailsVisible: false,
       fileContent: '', // Stores the content of the selected file
+      currentModSource: null, // 存储当前查看的MOD的source信息
       mods: [], // 存储 Mod 信息
       selectedMods: [], // 存储选中的 Mod
       loading: true,
@@ -263,6 +276,10 @@ export default {
     
     async viewFileDetails(modName, fileSource) {
       try {
+        // 获取当前MOD的source信息
+        const currentMod = this.mods.find(mod => mod.name === modName);
+        this.currentModSource = currentMod?.source || null;
+        
         // 使用require动态导入文件内容
         const fileContent = await this.getFileContent(modName, fileSource);
         
@@ -379,8 +396,87 @@ export default {
     handleSelectionChange(selection) {
       this.selectedMods = selection;
     },
+    // 添加检查MOD冲突的方法
+    checkModConflicts(mods) {
+      // 用于存储每个文件路径对应的MOD和操作模式
+      const filePathMap = new Map();
+      const conflicts = [];
+      
+      // 遍历所有选中的MOD
+      for (const mod of mods) {
+        if (!mod.files || !Array.isArray(mod.files)) continue;
+        
+        // 遍历MOD中的每个文件
+        for (const file of mod.files) {
+          if (!file.source) continue;
+          
+          // 获取目标路径（如果没有destination则使用source）
+          const targetPath = file.destination || file.source;
+          const mode = file.mode || 'REPLACE'; // 默认为REPLACE模式
+          
+          // 检查此路径是否已存在于映射中
+          if (filePathMap.has(targetPath)) {
+            const existingEntry = filePathMap.get(targetPath);
+            
+            // 检查是否至少有一个是全量替换模式
+            const isCurrentReplace = mode === 'REPLACE';
+            const hasExistingReplace = existingEntry.modes.includes('REPLACE');
+            
+            if (isCurrentReplace || hasExistingReplace) {
+              // 添加当前MOD到已存在的条目
+              existingEntry.mods.push(mod.name);
+              existingEntry.modes.push(mode);
+              
+              // 如果这是第一次发现冲突，添加到冲突列表
+              if (existingEntry.mods.length === 2) {
+                conflicts.push({
+                  filePath: targetPath,
+                  mods: [...existingEntry.mods],
+                  modes: [...existingEntry.modes]
+                });
+              }
+            }
+          } else {
+            // 添加新条目到映射
+            filePathMap.set(targetPath, {
+              mods: [mod.name],
+              modes: [mode]
+            });
+          }
+        }
+      }
+      return conflicts;
+    },
     // 修改导出方法
     async exportSelected() {
+      // 检查MOD之间的文件冲突
+      const conflicts = this.checkModConflicts(this.selectedMods);
+      
+      if (conflicts.length > 0) {
+        // 构建冲突提示信息
+        let conflictMessage = '检测到以下可能的MOD冲突：\n\n';
+        
+        conflicts.forEach(conflict => {
+          conflictMessage += `文件路径: ${conflict.filePath}\n`;
+          conflictMessage += `冲突MOD: ${conflict.mods.join(', ')}\n`;
+          conflictMessage += `操作类型: ${conflict.modes.map(mode => this.getModeDescription(mode)).join(', ')}\n\n`;
+        });
+        
+        conflictMessage += '这些MOD可能会相互覆盖或产生冲突，确定要继续导出吗？';
+        
+        // 显示确认对话框
+        const confirmed = await this.$confirm(conflictMessage, '发现MOD冲突', {
+          confirmButtonText: '继续导出',
+          cancelButtonText: '取消',
+          type: 'warning',
+          dangerouslyUseHTMLString: false
+        }).catch(() => false);
+        
+        if (!confirmed) {
+          return; // 用户取消导出
+        }
+      }
+      
       this.loading = true;
       this.exportDialogVisible = false;
       
@@ -727,5 +823,44 @@ export default {
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
+}
+
+.footer {
+  margin-top: 30px;
+  text-align: center;
+  color: #606266;
+  padding: 20px 0;
+  border-top: 1px solid #eaeaea;
+}
+
+.footer a {
+  color: #409EFF;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+.mod-source-info {
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+}
+
+.source-link {
+  color: #409EFF;
+  text-decoration: none;
+}
+
+.source-link:hover {
+  text-decoration: underline;
+}
+
+.source-link-icon {
+  margin-left: 8px;
+  color: #409EFF;
+  font-size: 14px;
 }
 </style>

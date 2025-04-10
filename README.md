@@ -1,7 +1,7 @@
 # 
 
 ## 快速使用
-1. 进入网站 https://liwenhao0427.github.io/sultans-game-mod-manager/
+1. 进入网站 <a href="https://liwenhao0427.github.io/sultans-game-mod-manager/" target="_blank">https://liwenhao0427.github.io/sultans-game-mod-manager/</a>
 2. 勾选您希望使用的mod，点击左上角的 `导出选中` 按钮，下载 mod 整合包
 3. 解压到游戏根目录（选择解压到当前文件夹），运行根目录下的 苏丹的游戏mod管理器.exe 
 4. 完成了！请享受游戏吧！
