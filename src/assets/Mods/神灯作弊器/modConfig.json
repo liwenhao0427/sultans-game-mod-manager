@@ -2,11 +2,12 @@
   "name": "神灯作弊器",
   "author": "MarcWebber",
   "version": "1.0.0",
+  "recommend": 5,
   "gameVersion": "2025.04.08",
   "updateDate": "2025.04.10",
   "zipFile": "MarcWebber.zip",
   "tag": [
-    "自动导入","作弊器"
+    "作弊器","超大型Mod"
   ],
   "source": {
     "name": "Github作者MarcWebber",

@@ -66,21 +66,21 @@
         stripe
       >
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="name" label="Mod 名称" width="180" sortable>
+        <el-table-column prop="name" label="MOD名称" min-width="140" sortable>
           <template v-slot="scope">
-            <div class="mod-name">{{ scope.row.name }}</div>
+            <div 
+              class="mod-name" 
+              v-tooltip="scope.row.remark ? { content: scope.row.remark, placement: 'top' } : null"
+            >
+              {{ scope.row.name }}
+            </div>
           </template>
         </el-table-column>
-        <!-- <el-table-column prop="recommend" label="推荐度" width="180" sortable>
+        <el-table-column prop="recommend" label="推荐度" width="100" sortable>
           <template v-slot="scope">
-            <el-rate
-              v-model="scope.row.recommend"
-              disabled
-              show-score
-              text-color="#ff9900"
-            />
+            {{ scope.row.recommend || this.defaultRecommend }}
           </template>
-        </el-table-column> -->
+        </el-table-column>
         <el-table-column prop="author" label="作者" width="100" sortable column-key="author" :filters="getColumnFilters('author')" :filter-method="filterHandler">
           <template v-slot="scope">
             <el-tag size="small">{{ scope.row.author }}</el-tag>
@@ -93,7 +93,7 @@
             </a>
           </template>
         </el-table-column>
-        <el-table-column prop="version" label="版本" width="80" column-key="version" :filters="getColumnFilters('version')" :filter-method="filterHandler" />
+        <!-- <el-table-column prop="version" label="版本" width="80" column-key="version" :filters="getColumnFilters('version')" :filter-method="filterHandler" /> -->
         <el-table-column prop="gameVersion" label="游戏版本" width="120" sortable column-key="gameVersion" :filters="getColumnFilters('gameVersion')" :filter-method="filterHandler">
           <template v-slot="scope">
             <el-tag type="success" size="small">{{ scope.row.gameVersion }}</el-tag>
@@ -117,14 +117,14 @@
         </el-table-column>
         
         <el-table-column prop="updateDate" label="更新时间" width="120" sortable />
-        <el-table-column label="标签" width="180">
+        <el-table-column label="标签" width="150" column-key="tag" :filters="getTagFilters()" :filter-method="filterTagHandler">
           <template v-slot="scope">
             <div class="tag-container">
               <el-tag 
                 v-for="(tag, index) in getModTags(scope.row)" 
                 :key="index" 
                 size="small" 
-                :type="tag === '纯替换' ? 'danger' : getTagType(index)" 
+                :type="tag === '纯替换' ? 'danger' : (tag === '压缩包' ? 'warning' : getTagType(index))" 
                 effect="plain"
                 class="mod-tag"
               >
@@ -133,7 +133,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="文件">
+        <el-table-column label="文件" >
           <template v-slot="scope">
             <el-collapse accordion>
               <el-collapse-item>
@@ -227,6 +227,8 @@ export default {
   },
   data() {
     return {
+      authorColors: {}, // 用于存储作者对应的颜色类型
+      defaultRecommend: 3, // 默认推荐值
       fileDetailsVisible: false,
       fileContent: '', // Stores the content of the selected file
       currentModSource: null, // 存储当前查看的MOD的source信息
@@ -353,13 +355,49 @@ export default {
         throw new Error(`无法加载文件: ${modName}/${fileSource}`);
       }
     },
+    // 修改排序方法，使用recommend字段
     sortMods(mods) {
       return [...mods].sort((a, b) => {
-        const recommendA = a.recommend || this.defaultRecommend;
-        const recommendB = b.recommend || this.defaultRecommend;
+        const recommendA = a.recommend !== undefined ? a.recommend : this.defaultRecommend;
+        const recommendB = b.recommend !== undefined ? b.recommend : this.defaultRecommend;
         return recommendB - recommendA;
       });
     },
+
+    // 获取作者标签类型
+    getAuthorTagType(author) {
+      return this.authorColors[author] || '';
+    },
+    
+    // 获取标签筛选选项
+    getTagFilters() {
+      if (!this.mods || this.mods.length === 0) return [];
+      
+      // 收集所有标签
+      const allTags = [];
+      this.mods.forEach(mod => {
+        console.log('Processing mod:', mod); // Add this log to check the mode
+        const tags = this.getModTags(mod);
+        tags.forEach(tag => {
+          if (!allTags.includes(tag)) {
+            allTags.push(tag);
+          }
+        });
+      });
+      
+      // 转换为筛选选项格式
+      return allTags.map(tag => ({
+        text: tag,
+        value: tag
+      }));
+    },
+    
+    // 标签筛选处理函数
+    filterTagHandler(value, row) {
+      const tags = this.getModTags(row);
+      return tags.includes(value);
+    },
+  
     loadMods() {
       this.loading = true;
       try {
