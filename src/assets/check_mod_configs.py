@@ -27,11 +27,33 @@ def generate_default_config(mod_dir, mod_name):
         "files": []
     }
     
+    # 查找并读取txt文件作为remark
+    txt_files = []
+    for root, _, files in os.walk(mod_dir):
+        for file in files:
+            if file.lower().endswith('.txt'):
+                txt_path = os.path.join(root, file)
+                txt_files.append(txt_path)
+    
+    # 如果找到txt文件，读取第一个作为remark
+    if txt_files:
+        try:
+            with open(txt_files[0], 'r', encoding='utf-8', errors='ignore') as f:
+                txt_content = f.read().strip()
+                if txt_content:
+                    # 限制remark长度，避免过长
+                    if len(txt_content) > 500:
+                        txt_content = txt_content[:497] + "..."
+                    default_config["remark"] = txt_content
+                    print(f"已从 {os.path.basename(txt_files[0])} 读取说明信息")
+        except Exception as e:
+            print(f"读取txt文件时出错: {e}")
+    
     # 遍历MOD目录中的所有文件
     for root, _, files in os.walk(mod_dir):
         for file in files:
-            # 跳过modConfig.json文件本身
-            if file == "modConfig.json":
+            # 跳过modConfig.json文件本身和txt文件
+            if file == "modConfig.json" or file.lower().endswith('.txt'):
                 continue
                 
             # 计算相对路径

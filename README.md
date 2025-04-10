@@ -1,4 +1,4 @@
-# 
+# 苏丹的游戏 MOD 管理器
 
 ## 快速使用
 1. 进入网站 <a href="https://liwenhao0427.github.io/sultans-game-mod-manager/" target="_blank">https://liwenhao0427.github.io/sultans-game-mod-manager/</a>
@@ -10,7 +10,14 @@
 ## 额外说明
 1. Mod 会存放在游戏根目录的 Mods 目录下，您可以随时移除不想要的 mod，之后重新运行 苏丹的游戏mod管理器.exe 即可完成更新
 2. 每次游戏版本更新后，请先检查游戏完整性，将游戏配置还原到默认，然后手动删除\Sultan's Game_Data\StreamingAssets\bak文件夹（之后会增加一个删除的命令），重新运行 苏丹的游戏mod管理器.exe 即可完成更新
+3. 如果MOD有说明文档，可以在MOD管理器中将鼠标悬停在MOD名称上查看简要说明，或点击MOD名称查看完整说明
 
+## 功能特性
+- 支持多种MOD安装模式，包括完全替换、文本替换、标记替换等
+- 自动备份原始游戏文件，可随时还原
+- 支持MOD冲突检测，避免不兼容MOD同时安装
+- 提供MOD筛选、搜索和排序功能
+- 支持查看MOD文件详情和说明文档
 
 ## Mod 配置文件结构
 `modConfig.json`
@@ -21,6 +28,12 @@
   "version": "string",
   "gameVersion": "string",
   "updateDate": "YYYY.MM.DD",
+  "remark": "string",
+  "tag": ["string"],
+  "source": {
+    "name": "string",
+    "url": "string"
+  },
   "files": [
     {
       "source": "string",

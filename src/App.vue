@@ -73,8 +73,11 @@
             <div 
               class="mod-name" 
               v-tooltip="scope.row.remark ? { content: scope.row.remark, placement: 'top' } : null"
+              @click="showRemarkDetails(scope.row)"
+              :class="{ 'has-remark': scope.row.remark }"
             >
               {{ scope.row.name }}
+              <i v-if="scope.row.remark" class="el-icon-info remark-icon"></i>
             </div>
           </template>
         </el-table-column>
@@ -190,6 +193,23 @@
       </div>
     </el-card>
 
+    <!-- 添加MOD说明详情对话框 -->
+    <el-dialog
+      title="MOD说明详情"
+      v-model="remarkDetailsVisible"
+      width="60%"
+      class="remark-details-dialog"
+    >
+      <div v-if="currentModName" class="mod-name-header">
+        <h3>{{ currentModName }}</h3>
+      </div>
+      <div class="remark-content-container">
+        <pre>{{ currentRemark }}</pre>
+      </div>
+      <template #footer>
+        <el-button @click="remarkDetailsVisible = false">关闭</el-button>
+      </template>
+    </el-dialog>
     <el-dialog
       title="文件详情"
       v-model="fileDetailsVisible"
@@ -229,6 +249,9 @@ export default {
   },
   data() {
     return {
+      remarkDetailsVisible: false,
+      currentRemark: '',
+      currentModName: '',
       columnFilters: {}, // 存储当前应用的列筛选
       authorColors: {}, // 用于存储作者对应的颜色类型
       defaultRecommend: 3, // 默认推荐值
@@ -326,6 +349,14 @@ export default {
     }, 500);
   },
   methods: {
+    // 显示MOD说明详情
+    showRemarkDetails(mod) {
+      if (mod.remark) {
+        this.currentModName = mod.name;
+        this.currentRemark = mod.remark;
+        this.remarkDetailsVisible = true;
+      }
+    },
     // 处理表格筛选变化
     handleFilterChange(filters) {
       // 更新筛选状态
@@ -1118,5 +1149,48 @@ export default {
 
 .zip-file-notice .el-icon-info {
   font-size: 18px;
+}
+
+.mod-name {
+  font-weight: bold;
+  color: #303133;
+  cursor: default;
+  display: flex;
+  align-items: center;
+}
+
+.mod-name.has-remark {
+  cursor: pointer;
+}
+
+.mod-name.has-remark:hover {
+  color: #409EFF;
+}
+
+.remark-icon {
+  margin-left: 5px;
+  font-size: 14px;
+  color: #909399;
+}
+
+.mod-name-header {
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.remark-content-container {
+  background-color: #f8f8f8;
+  padding: 15px;
+  border-radius: 4px;
+  max-height: 500px;
+  overflow: auto;
+}
+
+.remark-content-container pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: 'Courier New', Courier, monospace;
 }
 </style>
