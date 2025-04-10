@@ -71,7 +71,7 @@ def restore_mods():
                 
                 # 检查备份文件大小
                 if os.path.getsize(bak_file) <= 1:
-                    # 这是ADD模式的备份，删除目标文件
+                    # 这是空备份文件，表示原始文件不存在或是ADD模式的备份，删除目标文件
                     if os.path.exists(target_file):
                         os.remove(target_file)
                         print(f"  - 删除文件: {target_file}")
@@ -146,14 +146,22 @@ def process_mod(json_file, bak_dir):
             ensure_directory(target_dir)
             
             # 备份原始文件（如果存在且尚未备份）
-            backup_file = os.path.join(bak_dir, target_path)
+            backup_file = os.path.join(bak_dir, target_path + '.bak')
             backup_dir = os.path.dirname(backup_file)
             ensure_directory(backup_dir)
             
-            if os.path.exists(target_file) and not os.path.exists(backup_file):
+            # 创建备份文件
+            if not os.path.exists(backup_file):
                 ensure_directory(os.path.dirname(backup_file))
-                shutil.copy2(target_file, backup_file)
-                print(f"[备份] {target_path}")
+                if os.path.exists(target_file):
+                    # 如果目标文件存在，创建完整备份
+                    shutil.copy2(target_file, backup_file)
+                    print(f"[备份] {target_path}")
+                else:
+                    # 如果目标文件不存在，创建空备份文件
+                    with open(backup_file, 'w', encoding='utf-8') as f:
+                        f.write('')  # 写入空内容
+                    print(f"[空备份] {target_path} (目标文件不存在)")
             
             # 根据模式处理文件
             if mode == 'REPLACE':
