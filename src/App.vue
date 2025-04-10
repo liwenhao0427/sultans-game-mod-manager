@@ -888,7 +888,7 @@ export default {
 
 <style>
 .mod-manager-container {
-  max-width: 1200px;
+  max-width: 1500px;
   margin: 0 auto;
   padding: 20px;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
