@@ -117,7 +117,7 @@
         </el-table-column>
         
         <el-table-column prop="updateDate" label="更新时间" width="120" sortable />
-        <el-table-column label="标签" width="200">
+        <el-table-column label="标签" width="180">
           <template v-slot="scope">
             <div class="tag-container">
               <el-tag 
@@ -152,9 +152,9 @@
                     <div class="file-info">
                       <div class="file-source">{{ file.source }}</div>
                       <div class="file-mode">
-                        <el-tag :type="getModeTagType(file.mode)" size="mini">
-                          {{ getModeDescription(file.mode) }}
-                        </el-tag>
+<!--                        <el-tag :type="getModeTagType(file.mode)" size="mini">-->
+<!--                          {{ getModeDescription(file.mode) }}-->
+<!--                        </el-tag>-->
                         <span class="file-mode-params" v-if="file.val1">
                           参数1: {{ file.val1 }}
                         </span>
@@ -767,7 +767,7 @@ export default {
 }
 
 .file-item {
-  display: flex;
+  display: block;
   justify-content: space-between;
   align-items: center;
   padding: 10px 0;
