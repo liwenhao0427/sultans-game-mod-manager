@@ -1,7 +1,12 @@
 <template>
-  <div class="mod-manager-container">
+  <div class="mod-manager-container">   
     <div class="header">
       <h1>苏丹的游戏 MOD 管理器</h1>
+          <!-- 添加操作指引 -->
+      <div class="operation-guide">
+        <p>快速开始：勾选需要的MOD并点击“导出选中”按钮。</p>
+        <el-button type="text" @click="showGuideDialog">查看详细操作指引</el-button>
+      </div>
       <div class="search-bar">
         <el-input
           v-model="searchQuery"
@@ -13,6 +18,41 @@
         />
       </div>
     </div>
+    <!-- 详细操作指引对话框 -->
+    <el-dialog
+      title="详细操作指引"
+      v-model="guideDialogVisible"
+      width="50%"
+    >
+      <div class="guide-content">
+        <ol>
+          <li>选择一个或多个MOD，然后点击“导出选中”按钮。</li>
+          <li>在弹出的导出选项对话框中选择要导出的内容，第一次下载时推荐同时导出exe文件，之后仅导出需要的mod放在之前的Mods目录下即可。</li>
+          <li>点击“确认导出”按钮完成导出。</li>
+          <li>解压到任意目录后运行【苏丹的游戏mod管理器.exe】即可。</li>
+        </ol>
+      </div>
+      <div class="guide-content">
+        <ol>
+          <h3>程序操作额外说明：</h3>
+          <li>程序默认会从C:\Program Files (x86)\Steam\steamapps\common\Sultan's Game寻找游戏，如果找不到游戏路径，需要手动输入</li>
+          <li>程序会在当前目录下生成缓存文件game_path_config.json缓存游戏路径和游戏更新时间，下次默认使用缓存操作</li>
+          <li>每次运行程序，都会先使用备份还原游戏文件，再进行mod安装操作，游戏备份目录在config同级bak目录下</li>
+          <li>游戏更新后，点击运行mod会清除之前的备份文件</li>
+        </ol>
+      </div>
+      <div class="guide-content">
+        <ol>
+          <h3>网站操作额外说明：</h3>
+          <li>使用搜索栏查找特定的MOD。</li>
+          <li>通过表格中的筛选功能可以过滤MOD列表。</li>
+          <li>exe文件和python文件效果完全相同，仅打包</li>
+        </ol>
+      </div>
+      <template #footer>
+        <el-button @click="guideDialogVisible = false">关闭</el-button>
+      </template>
+    </el-dialog>
 
     <div class="toolbar">
       <div>
@@ -249,6 +289,7 @@ export default {
   },
   data() {
     return {
+      guideDialogVisible: false, // 控制操作指引对话框的显示
       remarkDetailsVisible: false,
       currentRemark: '',
       currentModName: '',
@@ -349,6 +390,9 @@ export default {
     }, 500);
   },
   methods: {
+    showGuideDialog() {
+      this.guideDialogVisible = true;
+    },
     // 显示MOD说明详情
     showRemarkDetails(mod) {
       if (mod.remark) {
@@ -1193,4 +1237,27 @@ export default {
   word-wrap: break-word;
   font-family: 'Courier New', Courier, monospace;
 }
+
+.operation-guide {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f0f9eb;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.operation-guide p {
+  margin: 0;
+  font-weight: bold;
+  color: #67c23a;
+}
+
+.guide-content {
+  padding: 10px;
+  background-color: #f8f8f8;
+  border-radius: 4px;
+}
+
 </style>

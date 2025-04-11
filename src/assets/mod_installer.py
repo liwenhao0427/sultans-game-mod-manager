@@ -33,12 +33,12 @@ def restore_mods():
     """执行还原操作"""
     print("[预处理] 正在执行还原操作...")
     
-    # 获取应用程序路径
-    script_dir = get_application_path()
+    # 使用游戏路径而不是应用程序路径
+    game_path = get_game_path()
     
     # 备份目录和配置目录
-    bak_dir = os.path.join(script_dir, "Sultan's Game_Data", "StreamingAssets", "bak")
-    config_dir = os.path.join(script_dir, "Sultan's Game_Data", "StreamingAssets", "config")
+    bak_dir = os.path.join(game_path, "Sultan's Game_Data", "StreamingAssets", "bak")
+    config_dir = os.path.join(game_path, "Sultan's Game_Data", "StreamingAssets", "config")
     
     print(f"[调试] 备份目录: {bak_dir}")
     print(f"[调试] 配置目录: {config_dir}")
@@ -103,10 +103,24 @@ def restore_mods():
     
     return True
 
+def clear_bak_files():
+    """清空bak文件夹中的文件"""
+    # 使用游戏路径而不是应用程序路径
+    game_path = get_game_path()
+    bak_dir = os.path.join(game_path, "Sultan's Game_Data", "StreamingAssets", "bak")
+    
+    for root, _, files in os.walk(bak_dir):
+        for file in files:
+            file_path = os.path.join(root, file)
+            if os.path.getsize(file_path) > 0:
+                os.remove(file_path)
+                print(f"[清空] 删除文件: {file_path}")
+
 def process_mod(json_file, bak_dir):
     """处理单个MOD，使用modConfig.json作为参数"""
-    script_dir = get_application_path()
-    config_dir = os.path.join(script_dir, "Sultan's Game_Data", "StreamingAssets", "config")
+    # 使用游戏路径而不是应用程序路径
+    game_path = get_game_path()
+    config_dir = os.path.join(game_path, "Sultan's Game_Data", "StreamingAssets", "config")
     
     # 读取modConfig.json文件
     try:
@@ -115,7 +129,7 @@ def process_mod(json_file, bak_dir):
         
         # 获取MOD名称
         mod_name = os.path.basename(os.path.dirname(json_file))
-        print(f"[处理] MOD: {mod_name}")
+        print(f"====================\n[处理] MOD: {mod_name}\n====================")
         
         # 检查files字段是否存在
         if 'files' not in mod_config or not mod_config['files']:
@@ -211,20 +225,30 @@ def process_mod(json_file, bak_dir):
                 else:
                     print(f"[错误] 目标文件不存在，无法执行区间替换: {target_path}")
             elif mode == 'APPEND':
-                # 末尾追加内容
+                # 末尾追加内容到倒数第val1行
                 with open(source_file, 'r', encoding='utf-8') as f:
                     append_content = f.read()
                 
                 if os.path.exists(target_file):
-                    with open(target_file, 'a', encoding='utf-8') as f:
-                        f.write(append_content)
+                    with open(target_file, 'r+', encoding='utf-8') as f:
+                        lines = f.readlines()
+                        try:
+                            # 将内容插入到倒数第val1行之前
+                            insert_index = len(lines) - int(val1)
+                            if insert_index < 0:
+                                insert_index = 0
+                            lines.insert(insert_index, append_content + '\n')
+                            f.seek(0)
+                            f.writelines(lines)
+                        except ValueError:
+                            print(f"[错误] val1参数无效: {val1}")
                 else:
                     with open(target_file, 'w', encoding='utf-8') as f:
                         f.write(append_content)
                 
                 print(f"[追加] {target_path}")
             elif mode == 'INSERT':
-                # 指定位置插入内容
+                # 指定位置插入内容，从下一行开始插入
                 if os.path.exists(target_file):
                     with open(target_file, 'r', encoding='utf-8') as f:
                         content = f.read()
@@ -236,7 +260,8 @@ def process_mod(json_file, bak_dir):
                     insert_pos = content.find(val1)
                     
                     if insert_pos != -1:
-                        new_content = content[:insert_pos + len(val1)] + insert_content + content[insert_pos + len(val1):]
+                        # 插入内容从下一行开始
+                        new_content = content[:insert_pos + len(val1)] + '\n' + insert_content + content[insert_pos + len(val1):]
                         
                         with open(target_file, 'w', encoding='utf-8') as f:
                             f.write(new_content)
@@ -256,11 +281,12 @@ def process_mod(json_file, bak_dir):
 
 def install_mods():
     """安装MOD主函数"""
-    # 获取应用程序路径
+    # 使用游戏路径而不是应用程序路径
+    game_path = get_game_path()
     script_dir = get_application_path()
     
     # 创建备份目录
-    bak_dir = os.path.join(script_dir, "Sultan's Game_Data", "StreamingAssets", "bak")
+    bak_dir = os.path.join(game_path, "Sultan's Game_Data", "StreamingAssets", "bak")
     ensure_directory(bak_dir)
     
     # 获取Mods目录
@@ -293,9 +319,130 @@ def install_mods():
     print(f"\n[完成] 共处理 {total_count} 个MOD，成功 {success_count} 个")
     return True
 
+def get_game_path():
+    """获取游戏路径"""
+    possible_paths = [
+        r"C:\Program Files (x86)\Steam\steamapps\common\Sultan's Game",
+        r"C:\Program Files\Steam\steamapps\common\Sultan's Game",
+        r"D:\Program Files (x86)\Steam\steamapps\common\Sultan's Game",
+        r"D:\Program Files\Steam\steamapps\common\Sultan's Game",
+        r"E:\Program Files (x86)\Steam\steamapps\common\Sultan's Game",
+        r"E:\Program Files\Steam\steamapps\common\Sultan's Game",
+        r"C:\Games\Steam\steamapps\common\Sultan's Game",
+        r"D:\Games\Steam\steamapps\common\Sultan's Game",
+        r"E:\Games\Steam\steamapps\common\Sultan's Game",
+        r"C:\Game\Steam\steamapps\common\Sultan's Game",
+        r"D:\Game\Steam\steamapps\common\Sultan's Game",
+        r"E:\Game\Steam\steamapps\common\Sultan's Game"
+    ]
+    possible_paths.append(get_application_path())  # 添加应用程序路径
+
+    # 检查缓存的游戏路径
+    config_file = 'game_path_config.json'
+    if os.path.exists(config_file):
+        with open(config_file, 'r', encoding='utf-8') as f:
+            cached_path = json.load(f).get('game_path')
+            if cached_path and os.path.exists(cached_path):
+                print(f"[信息] 使用缓存的游戏路径: {cached_path}")
+                return cached_path
+
+    # 检查可能的路径
+    for path in possible_paths:
+        if os.path.exists(path):
+            print(f"[信息] 找到游戏路径: {path}")
+            return path
+
+    # 提示用户输入路径
+    while True:
+        user_input = input("未找到游戏路径，请输入游戏根目录（应包含'Sultan's Game'文件夹）: ").strip()
+        if "Sultan's Game" in user_input:
+            game_path = user_input.split("Sultan's Game")[0] + "Sultan's Game"
+            if os.path.exists(game_path):
+                # 缓存路径
+                with open(config_file, 'w', encoding='utf-8') as f:
+                    json.dump({'game_path': game_path}, f, ensure_ascii=False, indent=2)
+                print(f"[信息] 使用用户输入的游戏路径: {game_path}")
+                return game_path
+            else:
+                print("[警告] 输入的路径不存在，请确认后重试。")
+        else:
+            confirm = input("输入的路径可能不是游戏路径，输入 '我确定这就是游戏路径' 以强制使用该路径: ").strip()
+            if confirm == "我确定这就是游戏路径":
+                # 缓存路径
+                with open(config_file, 'w', encoding='utf-8') as f:
+                    json.dump({'game_path': user_input}, f, ensure_ascii=False, indent=2)
+                print(f"[信息] 强制使用用户输入的游戏路径: {user_input}")
+                return user_input
+
+def check_game_update(game_path):
+    """检查游戏是否更新"""
+    game_exe_path = os.path.join(game_path, "Sultan's Game.exe")
+    config_file = 'game_path_config.json'
+    
+    if not os.path.exists(game_exe_path):
+        print("[错误] 找不到游戏可执行文件，无法检查更新")
+        return False
+    
+    # 获取当前游戏文件的更新时间
+    current_mod_time = os.path.getmtime(game_exe_path)
+    
+    # 读取配置文件中的上次更新时间
+    last_mod_time = None
+    if os.path.exists(config_file):
+        with open(config_file, 'r', encoding='utf-8') as f:
+            config_data = json.load(f)
+            last_mod_time = config_data.get('last_mod_time')
+        
+    # 如果游戏文件更新时间不同，说明游戏已更新
+    if last_mod_time is None:
+        print("[信息] 检测到游戏更新，清空bak文件夹中的文件")
+        
+        # 更新配置文件中的更新时间
+        with open(config_file, 'w', encoding='utf-8') as f:
+            config_data = {'game_path': game_path, 'last_mod_time': current_mod_time}
+            json.dump(config_data, f, ensure_ascii=False, indent=2)
+        
+        return False
+    
+    # 如果游戏文件更新时间不同，说明游戏已更新
+    if current_mod_time != last_mod_time:
+        print("[信息] 检测到游戏更新，清空bak文件夹中的文件")
+        clear_bak_files()
+        
+        # 更新配置文件中的更新时间
+        with open(config_file, 'w', encoding='utf-8') as f:
+            config_data = {'game_path': game_path, 'last_mod_time': current_mod_time}
+            json.dump(config_data, f, ensure_ascii=False, indent=2)
+        
+        return True
+    
+    return False
+
+def clear_bak_files():
+    """清空bak文件夹中的文件"""
+    script_dir = get_application_path()
+    bak_dir = os.path.join(script_dir, "Sultan's Game_Data", "StreamingAssets", "bak")
+    
+    for root, _, files in os.walk(bak_dir):
+        for file in files:
+            file_path = os.path.join(root, file)
+            if os.path.getsize(file_path) > 0:
+                os.remove(file_path)
+                print(f"[清空] 删除文件: {file_path}")
+
 def main():
     """主函数"""
     print_header("MOD安装管理工具")
+    
+    # 获取游戏路径
+    game_path = get_game_path()
+    if not game_path:
+        print("无法确定游戏路径，安装中止")
+        input("按任意键继续...")
+        return
+    
+    # 检查游戏是否更新
+    check_game_update(game_path)
     
     # 执行还原操作
     if not restore_mods():
@@ -304,7 +451,7 @@ def main():
         return
     
     # 安装MOD
-    print("[安装阶段] 开始处理MOD文件...")
+    print("[安装阶段] 开始处理MOD文件...\n")
     install_mods()
     
     input("按任意键继续...")
