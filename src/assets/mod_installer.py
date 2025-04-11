@@ -395,7 +395,7 @@ def check_game_update(game_path):
         
     # 如果游戏文件更新时间不同，说明游戏已更新
     if last_mod_time is None:
-        print("[信息] 检测到游戏更新，清空bak文件夹中的文件")
+        print("[信息] 检测到配置文件不存在，将创建新的配置文件")
         
         # 更新配置文件中的更新时间
         with open(config_file, 'w', encoding='utf-8') as f:
