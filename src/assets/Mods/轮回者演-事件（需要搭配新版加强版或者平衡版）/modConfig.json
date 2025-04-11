@@ -13,47 +13,47 @@
   },
   "files": [
     {
-      "source": "轮回者演-事件（需要搭配新版加强版或者平衡版）/tag.json",
+      "source": "tag.json",
       "mode": "REPLACE"
     },
     {
-      "source": "轮回者演-事件（需要搭配新版加强版或者平衡版）/event/15300004.json",
+      "source": "event/15300004.json",
       "mode": "REPLACE"
     },
     {
-      "source": "轮回者演-事件（需要搭配新版加强版或者平衡版）/event/15300005.json",
+      "source": "event/15300005.json",
       "mode": "REPLACE"
     },
     {
-      "source": "轮回者演-事件（需要搭配新版加强版或者平衡版）/event/15300006.json",
+      "source": "event/15300006.json",
       "mode": "REPLACE"
     },
     {
-      "source": "轮回者演-事件（需要搭配新版加强版或者平衡版）/event/15300009.json",
+      "source": "event/15300009.json",
       "mode": "REPLACE"
     },
     {
-      "source": "轮回者演-事件（需要搭配新版加强版或者平衡版）/event/15300010.json",
+      "source": "event/15300010.json",
       "mode": "REPLACE"
     },
     {
-      "source": "轮回者演-事件（需要搭配新版加强版或者平衡版）/rite/15000004.json",
+      "source": "rite/15000004.json",
       "mode": "REPLACE"
     },
     {
-      "source": "轮回者演-事件（需要搭配新版加强版或者平衡版）/rite/15000005.json",
+      "source": "rite/15000005.json",
       "mode": "REPLACE"
     },
     {
-      "source": "轮回者演-事件（需要搭配新版加强版或者平衡版）/rite/15000006.json",
+      "source": "rite/15000006.json",
       "mode": "REPLACE"
     },
     {
-      "source": "轮回者演-事件（需要搭配新版加强版或者平衡版）/rite/15000009.json",
+      "source": "rite/15000009.json",
       "mode": "REPLACE"
     },
     {
-      "source": "轮回者演-事件（需要搭配新版加强版或者平衡版）/rite/15000010.json",
+      "source": "rite/15000010.json",
       "mode": "REPLACE"
     }
   ]

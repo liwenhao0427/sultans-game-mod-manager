@@ -407,7 +407,7 @@ def check_game_update(game_path):
     # 如果游戏文件更新时间不同，说明游戏已更新
     if current_mod_time != last_mod_time:
         print("[信息] 检测到游戏更新，清空bak文件夹中的文件")
-        clear_bak_files()
+        clear_bak_files(game_path)
         
         # 更新配置文件中的更新时间
         with open(config_file, 'w', encoding='utf-8') as f:
@@ -418,10 +418,9 @@ def check_game_update(game_path):
     
     return False
 
-def clear_bak_files():
+def clear_bak_files(game_path):
     """清空bak文件夹中的文件"""
-    script_dir = get_application_path()
-    bak_dir = os.path.join(script_dir, "Sultan's Game_Data", "StreamingAssets", "bak")
+    bak_dir = os.path.join(game_path, "Sultan's Game_Data", "StreamingAssets", "bak")
     
     for root, _, files in os.walk(bak_dir):
         for file in files:
