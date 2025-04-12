@@ -1,7 +1,6 @@
 module.exports = {
   transpileDependencies: true,
-  publicPath: process.env.VUE_APP_PUBLIC_PATH || '/',
-  // publicPath: process.env.NODE_ENV === 'production' ? '/sultans-game-mod-manager/' : '/',
+  publicPath: process.env.NODE_ENV === 'production' ? '/sultans-game-mod-manager/' : '/',
   chainWebpack: config => {
     // 完全移除默认的 JSON 处理规则
     config.module.rules.delete('json');
