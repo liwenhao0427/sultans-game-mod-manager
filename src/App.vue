@@ -64,7 +64,12 @@
         </el-button>
       </div>
       <div>
-        <el-tag type="info">总计 {{ mods.length }} 个MOD</el-tag>
+        <el-button plain>
+          <a href="https://liwenhao0427.github.io/sudans-game-reader/" target="_blank" class="mod-manager-link">
+            事件分支
+          </a>
+        </el-button>
+        <!-- <el-tag type="info">总计 {{ mods.length }} 个MOD</el-tag> -->
       </div>
     </div>
 
@@ -1258,6 +1263,18 @@ export default {
   padding: 10px;
   background-color: #f8f8f8;
   border-radius: 4px;
+}
+
+/* 优化Mod管理链接样式 */
+.mod-manager-link {
+  font-size: 0.85rem;
+  color: #606266;
+  text-decoration: none;
+  padding: 4px 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 </style>
