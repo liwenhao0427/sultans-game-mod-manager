@@ -79,11 +79,12 @@
       title="导出选项"
       width="400px"
     >
-      <el-form label-position="top">
+    <el-form label-position="top">
         <el-form-item label="导出内容">
           <el-checkbox v-model="exportOptions.includeMods" disabled>MOD文件</el-checkbox>
           <el-checkbox v-model="exportOptions.includeManager">MOD管理器(exe)</el-checkbox>
           <el-checkbox v-model="exportOptions.includeScript">MOD安装脚本(py)</el-checkbox>
+          <el-checkbox v-model="exportOptions.includeTextLoader">加载本地Mods配置(exe)</el-checkbox>
         </el-form-item>
         <el-form-item label="文件名">
           <el-input v-model="exportOptions.fileName" placeholder="导出文件名"></el-input>
@@ -310,12 +311,12 @@ export default {
       searchQuery: '',
       currentPage: 1,
       pageSize: 10,
-      // 新增导出选项相关数据
       exportDialogVisible: false,
       exportOptions: {
         includeMods: true, // 默认必须包含MOD文件
         includeManager: true, // 默认包含管理器
         includeScript: false, // 默认不包含脚本
+        includeTextLoader: false, // 默认不包含文本加载器
         fileName: 'mods.zip'
       },
       // 模式描述映射
@@ -700,6 +701,19 @@ export default {
         } catch (error) {
           console.error('主程序加载出错:', error);
           this.$message.warning('无法加载主程序文件，但Mod文件将正常导出');
+        }
+      }
+      
+      // 根据选项添加文本加载器
+      if (this.exportOptions.includeTextLoader) {
+        try {
+          const textLoaderPath = require('!!file-loader?esModule=false!@/assets/加载本地Mods配置.exe');
+          const textLoaderResponse = await fetch(textLoaderPath);
+          const textLoaderBlob = await textLoaderResponse.blob();
+          zip.file('加载本地Mods配置.exe', textLoaderBlob);
+        } catch (error) {
+          console.error('文本加载器加载出错:', error);
+          this.$message.warning('无法加载本地加载器文件，但其他文件将正常导出');
         }
       }
       

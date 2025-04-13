@@ -1,7 +1,20 @@
 import os
 import json
 import datetime
+import sys
 
+def get_application_path():
+    """获取应用程序路径，兼容打包环境"""
+    if getattr(sys, 'frozen', False):
+        # 如果是打包后的环境
+        application_path = os.path.dirname(sys.executable)
+    else:
+        # 如果是开发环境
+        application_path = os.path.dirname(os.path.abspath(__file__))
+    
+    print(f"[调试] 应用程序路径: {application_path}")
+    return application_path
+    
 def ensure_directory(directory):
     """确保目录存在"""
     if not os.path.exists(directory):
@@ -75,11 +88,11 @@ def generate_default_config(mod_dir, mod_name):
 
 def check_mod_configs():
     """检查所有MOD目录是否都有modConfig.json文件"""
-    # 获取当前脚本所在目录
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # 获取应用程序路径
+    app_path = get_application_path()
     
     # 获取Mods目录
-    mods_dir = os.path.join(script_dir, "Mods")
+    mods_dir = os.path.join(app_path, "Mods")
     if not os.path.exists(mods_dir):
         print(f"错误: Mods目录不存在 ({mods_dir})")
         return
