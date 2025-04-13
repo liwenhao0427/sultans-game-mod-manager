@@ -335,7 +335,9 @@ def get_game_path():
         r"D:\Game\Steam\steamapps\common\Sultan's Game",
         r"E:\Game\Steam\steamapps\common\Sultan's Game"
     ]
-    possible_paths.append(get_application_path())  # 添加应用程序路径
+    now_application_path = get_application_path()
+    if "Sultan's Game" in now_application_path:
+        possible_paths.append(now_application_path)  # 添加应用程序路径
 
     # 检查缓存的游戏路径
     config_file = 'game_path_config.json'
