@@ -49,6 +49,18 @@
           <li>exe文件和python文件效果完全相同，仅打包</li>
         </ol>
       </div>
+      <div class="guide-content">
+        <ol>
+          <h3>MOD管理器工作流程：</h3>
+          <li>
+            <el-image
+              ref="workflowImage"
+              :src="require('@/assets/uml.png')"
+              :preview-src-list="[require('@/assets/uml.png')]"
+            />
+          </li>
+        </ol>
+      </div>
       <template #footer>
         <el-button @click="guideDialogVisible = false">关闭</el-button>
       </template>

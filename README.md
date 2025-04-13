@@ -117,3 +117,69 @@ Github Pages 地址 https://liwenhao0427.github.io/sudans-game-reader/
   ]
 }
 ```
+
+## MOD工作流程
+
+MOD安装工具的工作流程如下图所示：
+
+![MOD安装流程图](./src/assets/uml.png)
+
+``` markdown
+@startuml
+title 苏丹的游戏MOD安装流程
+
+start
+:获取游戏路径;
+note right: 自动检测或用户手动输入
+
+:检查游戏是否更新;
+if (游戏已更新?) then (是)
+  :清空备份文件;
+endif
+
+:还原之前的MOD修改;
+note right: 从备份文件恢复原始游戏文件
+
+:开始安装MOD;
+
+:读取Mods目录下的所有MOD;
+
+while (遍历每个MOD) is (还有MOD)
+  if (存在modConfig.json?) then (是)
+    :读取MOD配置;
+    
+    while (处理MOD中的每个文件) is (还有文件)
+      :备份原始游戏文件;
+      
+      switch (处理模式)
+      case (REPLACE)
+        :完全替换模式;
+        note right: 直接用MOD文件替换游戏文件
+      case (REPLACE0)
+        :文本替换模式;
+        note right: 查找指定文本并替换
+      case (REPLACE1)
+        :区间替换模式;
+        note right: 替换两个标记之间的内容
+      case (APPEND)
+        :追加模式;
+        note right: 在文件末尾追加内容
+      case (INSERT)
+        :插入模式;
+        note right: 在指定标记后插入内容
+      endswitch
+    endwhile
+    
+    :MOD安装成功计数+1;
+  else (否)
+    :跳过该MOD;
+  endif
+  
+  :总MOD计数+1;
+endwhile
+
+:显示安装统计信息;
+
+stop
+@enduml
+```
