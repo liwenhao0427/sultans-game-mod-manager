@@ -2,13 +2,9 @@
 
 苏丹的游戏 MOD 管理器是一个用于游戏MOD管理的项目，如有侵权请联系我删除项目。
 
-访问地址： https://sultans-game-mod-manager.edgeone.site/
+访问地址：  https://liwenhao0427.github.io/sultans-game-mod-manager/
 
-Github Pages 地址 https://liwenhao0427.github.io/sultans-game-mod-manager/
-
-相关项目： 苏丹的游戏剧情阅读器： https://sudans-game-reader.zh-cn.edgeone.site
-
-Github Pages 地址 https://liwenhao0427.github.io/sudans-game-reader/
+相关项目： 苏丹的游戏剧情阅读器： https://liwenhao0427.github.io/sudans-game-reader/
 
 
 ## 快速使用

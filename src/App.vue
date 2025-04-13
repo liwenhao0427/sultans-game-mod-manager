@@ -77,7 +77,7 @@
       </div>
       <div>
         <el-button plain>
-          <a href="https://sudans-game-reader.zh-cn.edgeone.site" target="_blank" class="mod-manager-link">
+          <a href="https://liwenhao0427.github.io/sudans-game-reader/" target="_blank" class="mod-manager-link">
             事件分支
           </a>
         </el-button>
