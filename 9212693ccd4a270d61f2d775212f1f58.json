@@ -1,0 +1,595 @@
+{
+    "id": 1600005,
+    "name": "援助部落",
+    "text": "苍白纸人儿\n         ———— 制作者",
+    "tips": "bilibili苍白纸人儿",
+    "mapping_id":8000011, //
+    "once_new": -1,
+    "round_number": 1,
+    "waiting_round": 0,
+    "waiting_round_end_action": [],
+    "method_settlement": "",
+    "auto_begin": 0,
+    "auto_result": 0,//需要手动启动,
+    "location": "野外:[1,6]",
+    "icon": "rite_9",
+    "tag_tips": [],
+    "tag_tips_up": {},
+    "tips_text": [
+        "放入你不想要的一切吧！落后的部落什么都要！"
+    ],
+    "open_conditions": [
+      
+        ],
+    "random_text": {},
+    "random_text_up": {},
+    "settlement_prior": [],
+    "settlement": [
+            {
+                
+                "condition": { 
+                    "s1":1
+                    
+                
+            },
+            "result_title":"苍白纸人帮你联络了部落",
+            "result_text": "既然你都不要了\n就捐助给落后的部落吧\n...",
+            "result": 
+            {    
+                "clean.s1":1,
+                "clean.s2":1,
+                "clean.s3":1,
+                "clean.s4":1,
+                "clean.s5":1,
+                "clean.s6":1,
+                "clean.s7":1,
+                "clean.s8":1,
+                "clean.s9":1,
+                "clean.s10":1
+                
+                
+                
+
+            },
+            "action": {"rite":1600005 
+                
+            }
+            },
+            {
+                
+                "condition": { 
+                    "s2":1
+                    
+                
+            },
+            "result_title":"苍白纸人帮你联络了部落",
+            "result_text": "既然你都不要了\n就捐助给落后的部落吧\n...",
+            "result": 
+            {    
+                "clean.s1":1,
+                "clean.s2":1,
+                "clean.s3":1,
+                "clean.s4":1,
+                "clean.s5":1,
+                "clean.s6":1,
+                "clean.s7":1,
+                "clean.s8":1,
+                "clean.s9":1,
+                "clean.s10":1
+
+            },
+            "action": {"rite":1600005 
+                
+            }
+            },
+            {
+                
+                "condition": { 
+                    "s3":1
+                    
+                
+            },
+            "result_title":"苍白纸人帮你联络了部落",
+            "result_text": "既然你都不要了\n就捐助给落后的部落吧\n...",
+            "result": 
+            {    
+                "clean.s1":1,
+                "clean.s2":1,
+                "clean.s3":1,
+                "clean.s4":1,
+                "clean.s5":1,
+                "clean.s6":1,
+                "clean.s7":1,
+                "clean.s8":1,
+                "clean.s9":1,
+                "clean.s10":1
+
+            },
+            "action": {"rite":1600005 
+                
+            }
+            },
+            {
+                
+                "condition": { 
+                    "s4":1
+                    
+                
+            },
+            "result_title":"苍白纸人帮你联络了部落",
+            "result_text": "既然你都不要了\n就捐助给落后的部落吧\n...",
+            "result": 
+            {    
+                "clean.s1":1,
+                "clean.s2":1,
+                "clean.s3":1,
+                "clean.s4":1,
+                "clean.s5":1,
+                "clean.s6":1,
+                "clean.s7":1,
+                "clean.s8":1,
+                "clean.s9":1,
+                "clean.s10":1
+
+            },
+            "action": {"rite":1600005 
+                
+            }
+            },
+            {
+                
+                "condition": { 
+                    "s5":1
+                    
+                
+            },
+            "result_title":"苍白纸人帮你联络了部落",
+            "result_text": "既然你都不要了\n就捐助给落后的部落吧\n...",
+            "result": 
+            {    
+                "clean.s1":1,
+                "clean.s2":1,
+                "clean.s3":1,
+                "clean.s4":1,
+                "clean.s5":1,
+                "clean.s6":1,
+                "clean.s7":1,
+                "clean.s8":1,
+                "clean.s9":1,
+                "clean.s10":1
+            },
+            "action": {"rite":1600005 
+                
+            }
+            },
+            {
+                
+                "condition": { 
+                    "s6":1
+                    
+                
+            },
+            "result_title":"苍白纸人帮你联络了部落",
+            "result_text": "既然你都不要了\n就捐助给落后的部落吧\n...",
+            "result": 
+            {    
+                "clean.s1":1,
+                "clean.s2":1,
+                "clean.s3":1,
+                "clean.s4":1,
+                "clean.s5":1,
+                "clean.s6":1,
+                "clean.s7":1,
+                "clean.s8":1,
+                "clean.s9":1,
+                "clean.s10":1
+            },
+            "action": {"rite":1600005 
+                
+            }
+            },
+            {
+                
+                "condition": { 
+                    "s7":1
+                    
+                
+            },
+            "result_title":"苍白纸人帮你联络了部落",
+            "result_text": "既然你都不要了\n就捐助给落后的部落吧\n...",
+            "result": 
+            {    
+                "clean.s1":1,
+                "clean.s2":1,
+                "clean.s3":1,
+                "clean.s4":1,
+                "clean.s5":1,
+                "clean.s6":1,
+                "clean.s7":1,
+                "clean.s8":1,
+                "clean.s9":1,
+                "clean.s10":1
+
+            },
+            "action": {"rite":1600005 
+                
+            }
+            },
+            {
+                
+                "condition": { 
+                    "s8":1
+                    
+                
+            },
+            "result_title":"苍白纸人帮你联络了部落",
+            "result_text": "既然你都不要了\n就捐助给落后的部落吧\n...",
+            "result": 
+            {    
+                "clean.s1":1,
+                "clean.s2":1,
+                "clean.s3":1,
+                "clean.s4":1,
+                "clean.s5":1,
+                "clean.s6":1,
+                "clean.s7":1,
+                "clean.s8":1,
+                "clean.s9":1,
+                "clean.s10":1
+
+            },
+            "action": {"rite":1600005 
+                
+            }
+            },
+            {
+                
+                "condition": { 
+                    "s9":1
+                    
+                
+            },
+            "result_title":"苍白纸人帮你联络了部落",
+            "result_text": "既然你都不要了\n就捐助给落后的部落吧\n...",
+            "result": 
+            {    
+                "clean.s1":1,
+                "clean.s2":1,
+                "clean.s3":1,
+                "clean.s4":1,
+                "clean.s5":1,
+                "clean.s6":1,
+                "clean.s7":1,
+                "clean.s8":1,
+                "clean.s9":1,
+                "clean.s10":1
+
+            },
+            "action": {"rite":1600005 
+                
+            }
+            },
+            {
+                
+                "condition": { 
+                    "s10":1
+                    
+                
+            },
+            "result_title":"苍白纸人帮你联络了部落",
+            "result_text": "既然你都不要了\n就捐助给落后的部落吧\n...",
+            "result": 
+            {    
+                "clean.s1":1,
+                "clean.s2":1,
+                "clean.s3":1,
+                "clean.s4":1,
+                "clean.s5":1,
+                "clean.s6":1,
+                "clean.s7":1,
+                "clean.s8":1,
+                "clean.s9":1,
+                "clean.s10":1
+
+            },
+            "action": {"rite":1600005 
+                
+            }
+            }
+            
+            
+        ],                
+        "settlement_extre": [
+          
+        ],
+        "cards_slot":
+    {
+        "s1":
+            {
+                "condition": 
+                {
+                    "any":{
+                        "type": ["item","sudan","char"],
+                     "!主角":1
+                    }
+                    
+                    
+                      
+                },
+                "open_adsorb":0,
+                "is_key":0,
+                "is_empty":1, // 不能为空
+                "is_enemy":0, 
+                "text":"放入你不想要的一切吧！落后的部落什么都要！",                   
+                "pops":[
+                    {
+                        "condition":{
+                            
+                        },
+                        "action":{
+                            "pop.5006559_s1_01.self":"<i>部落会拿走你放入的一切...</i>"
+                        }
+                    }
+                    
+                ] 
+                
+            },
+            "s2":
+            {
+                "condition": 
+                {
+                    "any":{
+                        "type": ["item","sudan","char"]
+                     ,"!主角":1
+                    }
+                      
+                },
+                "open_adsorb":0,
+                "is_key":0,
+                "is_empty":1, // 不能为空
+                "is_enemy":0, 
+                "text":"放入你不想要的一切吧！落后的部落什么都要！",                   
+                "pops":[
+                    {
+                        "condition":{
+                            
+                        },
+                        "action":{
+                            "pop.5006559_s1_01.self":"<i>部落会拿走你放入的一切...</i>"
+                        }
+                    }
+                    
+                ] 
+                
+            },
+            "s3":
+            {
+                "condition": 
+                {
+                   "any":{
+                        "type": ["item","sudan","char"]
+                        ,"!主角":1
+                    }
+                },
+                "open_adsorb":0,
+                "is_key":0,
+                "is_empty":1, // 不能为空
+                "is_enemy":0, 
+                "text":"放入你不想要的一切吧！落后的部落什么都要！",                   
+                "pops":[
+                    {
+                        "condition":{
+                            
+                        },
+                        "action":{
+                            "pop.5006559_s1_01.self":"<i>部落会拿走你放入的一切...</i>"
+                        }
+                    }
+                    
+                ] 
+                
+            },
+            "s4":
+            {
+                "condition": 
+                {
+                    
+                    "any":{
+                        "type": ["item","sudan","char"]
+                        ,"!主角":1
+                    }
+                      
+                },
+                "open_adsorb":0,
+                "is_key":0,
+                "is_empty":1, // 不能为空
+                "is_enemy":0, 
+                "text":"放入你不想要的一切吧！落后的部落什么都要！",                   
+                "pops":[
+                    {
+                        "condition":{
+                            
+                        },
+                        "action":{
+                            "pop.5006559_s1_01.self":"<i>部落会拿走你放入的一切...</i>"
+                        }
+                    }
+                    
+                ] 
+                
+            },
+            "s5":
+            {
+                "condition": 
+                {
+                    "any":{
+                        "type": ["item","sudan","char"],"!主角":1
+                     
+                    }
+                },
+                "open_adsorb":0,
+                "is_key":0,
+                "is_empty":1, // 不能为空
+                "is_enemy":0, 
+                "text":"放入你不想要的一切吧！落后的部落什么都要！",                   
+                "pops":[
+                    {
+                        "condition":{
+                            
+                        },
+                        "action":{
+                            "pop.5006559_s1_01.self":"<i>部落会拿走你放入的一切...</i>"
+                        }
+                    }
+                    
+                ] 
+                
+            },
+            "s6":
+            {
+                "condition": 
+                {
+                   "any":{
+                        "type": ["item","sudan","char"]
+                        ,"!主角":1
+                    }
+                      
+                },
+                "open_adsorb":0,
+                "is_key":0,
+                "is_empty":1, // 不能为空
+                "is_enemy":0, 
+                "text":"放入你不想要的一切吧！落后的部落什么都要！",                   
+                "pops":[
+                    {
+                        "condition":{
+                            
+                        },
+                        "action":{
+                            "pop.5006559_s1_01.self":"<i>部落会拿走你放入的一切...</i>"
+                        }
+                    }
+                    
+                ] 
+                
+            },
+            "s7":
+            {
+                "condition": 
+                {
+                    
+                    "any":{
+                        "type": ["item","sudan","char"]
+                        ,"!主角":1
+                    }
+                      
+                },
+                "open_adsorb":0,
+                "is_key":0,
+                "is_empty":1, // 不能为空
+                "is_enemy":0, 
+                "text":"放入你不想要的一切吧！落后的部落什么都要！",                   
+                "pops":[
+                    {
+                        "condition":{
+                            
+                        },
+                        "action":{
+                            "pop.5006559_s1_01.self":"<i>部落会拿走你放入的一切...</i>"
+                        }
+                    }
+                    
+                ] 
+                
+            },
+            "s8":
+            {
+                "condition": 
+                {
+                    
+                   "any":{
+                        "type": ["item","sudan","char"]
+                        ,"!主角":1
+                    }
+                      
+                },
+                "open_adsorb":0,
+                "is_key":0,
+                "is_empty":1, // 不能为空
+                "is_enemy":0, 
+                "text":"放入你不想要的一切吧！落后的部落什么都要！",                   
+                "pops":[
+                    {
+                        "condition":{
+                            
+                        },
+                        "action":{
+                            "pop.5006559_s1_01.self":"<i>部落会拿走你放入的一切...</i>"
+                        }
+                    }
+                    
+                ] 
+                
+            },
+            "s9":
+            {
+                "condition": 
+                {
+                    
+                   "any":{
+                        "type": ["item","sudan","char"]
+                        ,"!主角":1
+                    }
+                      
+                },
+                "open_adsorb":0,
+                "is_key":0,
+                "is_empty":1, // 不能为空
+                "is_enemy":0, 
+                "text":"放入你不想要的一切吧！落后的部落什么都要！",                   
+                "pops":[
+                    {
+                        "condition":{
+                            
+                        },
+                        "action":{
+                            "pop.5006559_s1_01.self":"<i>部落会拿走你放入的一切...</i>"
+                        }
+                    }
+                    
+                ] 
+                
+            },
+            "s10":
+            {
+                "condition": 
+                {
+                    
+                    "any":{
+                        "type": ["item","sudan","char"]
+                        ,"!主角":1
+                    }
+                      
+                },
+                "open_adsorb":0,
+                "is_key":0,
+                "is_empty":1, // 不能为空
+                "is_enemy":0, 
+                "text":"放入你不想要的一切吧！落后的部落什么都要！",                   
+                "pops":[
+                    {
+                        "condition":{
+                            
+                        },
+                        "action":{
+                            "pop.5006559_s1_01.self":"<i>部落会拿走你放入的一切...</i>"
+                        }
+                    }
+                    
+                ] 
+                
+            }
+            
+            
+    }
+} 

@@ -1,0 +1,96 @@
+{
+  "id": 1600004,
+  "name": "魔戒之力",
+  "text": "强大的魔戒啊！其中究竟蕴含了什么样的魔力！？",       
+  "tips": "bilibili苍白纸人儿",
+  "mapping_id":8001049, //
+  "once_new":1,
+  "round_number": 0,
+  "waiting_round":1,
+  "waiting_round_end_action":[
+  ],
+  "method_settlement": "",
+  "auto_begin": 0,
+  "auto_result":0,
+  "location": "商业区:[7,19]",
+  "icon": "rite_20", 
+  "tag_tips": [
+  ],
+  "tag_tips_up":{
+  },
+  "tips_text":["\n试试让不同的角色来体验它吧！\n黄金品阶之下的角色才能进阶"
+  ],
+  "open_conditions": [
+  ],
+  "random_text":{
+  },
+  "random_text_up":{
+  },
+  "settlement_prior": [
+  ],                
+  "settlement": [
+      {
+          "condition":
+          {"s1.rare<=":3
+             },
+          "result_title":"耳边似乎响起旋律！",
+          "result_text": "[s1.name] 超进化！\n有什么 WOW WOW~~ 会传达至这片天空吧\n但是 WOW WOW~~ 明天会怎样谁都无法预料\n无限大的梦想之后 是这空无一物的世界\n ...  ...  \n看似不可靠的翅膀 也一定能展翅高飞\n On My Love~~~",
+          "result": 
+          {
+            
+            "s1.uprare":1,
+            "s1-纵欲的痕迹":1,
+            "s1+体魄": 1, //体魄+1
+            "s1+魅力": 1, //魅力+1
+            "s1+智慧": 1, //智慧+1
+            "s1+战斗": 1, //战斗+1
+            "s1+社交": 1, //体魄+1
+            "s1+魔力": 1 //魔力+1
+            
+          
+          
+          },
+          "action":
+          {
+    
+          }
+      }
+  ],                
+  "settlement_extre": [
+  ],
+  "cards_slot":       
+  {
+    "s1":
+        {
+            "condition": 
+            {
+                "type":"char" ,
+                
+                "!is": 2000129,
+                "!怪物":1,
+                "rare<=":3
+                            
+            },
+            "open_adsorb":0,
+            "is_key":0,
+            "is_empty":0,
+            "is_enemy":0,
+            "text":"强大的魔戒啊！其中究竟蕴含了什么样的魔力！？\n试试让不同的角色来体验它吧！\n黄金品阶之下的角色才能进阶！" 
+        },
+      "s2":
+              {
+                  "condition": 
+                  {
+                      "is":2050003
+                                             
+                  },
+                  "open_adsorb":1,
+                  "is_key":0,
+                  "is_empty":0,
+                  "is_enemy":0,
+                  "text":"魔戒"
+              }
+        
+}
+
+} 
