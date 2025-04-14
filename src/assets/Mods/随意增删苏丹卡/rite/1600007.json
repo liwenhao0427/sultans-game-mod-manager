@@ -1,0 +1,144 @@
+{
+    "id": 1600007,
+    "name": "绿先知魔力",
+    "text": "苍白纸人儿\n         ———— 制作者",
+    "tips": "bilibili苍白纸人儿",
+    "mapping_id":8000063, //
+    "once_new": 1,
+    "round_number": 0,
+    "waiting_round": 1,
+    "waiting_round_end_action": [],
+    "method_settlement": "",
+    "auto_begin": 0,
+    "auto_result": 0,//需要手动启动,
+    "location": "自宅:[2,12]",
+    "icon": "rite_20",
+    "tag_tips": [],
+    "tag_tips_up": {},
+    "tips_text": [
+        "放入你想的一切验证绿先知的魔力吧,\n我保证你会得到双份！..."
+    ],
+    "open_conditions": [
+      
+        ],
+    "random_text": {},
+    "random_text_up": {},
+    "settlement_prior": [],
+    "settlement": [
+            {
+                
+                "condition": {
+                "!消耗品":1
+            },
+            "result_title":"既然你已一键三连",
+            "result_text": "这[s1.name]卡我就帮你复制吧\n...",
+            "result": 
+            {    
+                "copy.s1":1
+            },
+            "action": {
+            }
+            },
+            {
+                
+                "condition": {
+                "消耗品":1
+            },
+            "result_title":"",
+            "result_text": "",
+            "result": 
+            {    
+                "copy.s1":1
+                
+
+
+            },
+            "action": {
+            }
+            }
+            
+            
+        ],                
+        "settlement_extre": [
+            {
+                
+                "condition": {
+                "消耗品":1
+            },
+            "result_title":"既然你已一键三连",
+            "result_text": "这[s1.name]卡我就帮你复制吧\n...",
+            "result": 
+            {    
+                "copy.s1":1
+                
+
+
+            },
+            "action": {
+            }
+            }
+            
+          
+        ],
+        "cards_slot":
+    {
+        "s1":
+            {
+                "condition": 
+                {
+                    
+                    "type":["item",
+                     "char"]
+                    
+                      
+                },
+                "open_adsorb":0,
+                "is_key":0,
+                "is_empty":0, // 不能为空
+                "is_enemy":0, 
+                "text":"放入你想的一切验证绿先知的魔力吧,\n我保证你会得到双份！...除非那是...",                   
+                "pops":[
+                    {
+                        "condition":{
+                            
+                        },
+                        "action":{
+                            "pop.5006559_s1_01.self":"<i>绿先知的魔力...</i>"
+                        }
+                    }
+                    
+                ] 
+                
+            },
+            "s2":
+            {
+                "condition": 
+                {
+                    
+                            
+                            
+                            "is":[2050007]
+                  
+                        
+                },
+                "open_adsorb":1,
+                "is_key":0,
+                "is_empty":0, // 不能为空
+                "is_enemy":0, 
+                "text":"绿先知",                   
+                "pops":[
+                    {
+                        "condition":{
+                            
+                        },
+                        "action":{
+                            "pop.5006559_s1_01.self":"<i>绿先知的魔力...</i>"
+                        }
+                    }
+                    
+                ] 
+                
+            }
+            
+    }
+} 

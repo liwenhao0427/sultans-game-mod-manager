@@ -1,0 +1,83 @@
+{
+    "id": 1600002,
+    "name": "御兽训练",
+    "text": "经过专业的训练，练掌握尖端的御兽术。",
+    "tips": "增加一个御兽槽位",
+    "mapping_id":8001048, //
+    "once_new": 1,
+    "round_number": 0,
+    "waiting_round": 3,
+    "waiting_round_end_action": [],
+    "method_settlement": "",
+    "auto_begin": 0,
+    "auto_result": 0,
+    "location": "自宅:[2,12]",
+    "icon": "rite_23",
+    "tag_tips": [],
+    "tag_tips_up": {},
+    "tips_text": [
+        "可以使自己或追随者获得一个宠物装备槽"
+    ],
+    "open_conditions": [],
+    "random_text": {},
+    "random_text_up": {},
+    "settlement_prior": [],
+    "settlement": [
+            {
+                "condition": {
+                    "s2":1
+ 
+                },
+                "result_title":"学习一下尖端的御兽吧",
+                "result_text": "似乎掌握了了不得的技术！把狮子王叫来！或者来只小猫小马小鳄鱼试试也行……吧？",
+                "result": 
+                { 
+                    
+                "s2+equip_slot":"animal_handling",  //获得动物槽位
+                
+               
+        
+                },
+                "action": {
+                }
+            }
+        ],                
+        "settlement_extre": [
+          
+        ],
+        "cards_slot"://这是触发条件卡
+        {
+          
+            "s1":
+            {
+                "condition":
+                {
+                    "type": "char",//物品卡似乎没有？
+                    "is":2030002 //御兽者
+               
+                },
+                "open_adsorb":1,
+                "is_key":0,
+                "is_empty":0,
+                "is_enemy":0,
+                "text":"肯德拉"
+            },
+            "s2":
+            {
+                "condition": {
+                "type": "char",
+                "any": {
+                    "!动物": 1,
+                    "is": 2000461
+                },
+                "!怪物": 1
+                
+            },
+            "open_adsorb": 0,
+            "is_key": 0,
+            "is_empty": 0,
+            "is_enemy": 0,
+                "text":"你可以亲自，或让一名追随者接受训练"
+            }
+        }
+    } 

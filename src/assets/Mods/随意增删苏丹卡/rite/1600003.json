@@ -1,0 +1,416 @@
+{
+    "id": 1600003,
+    "name": "苍白纸人儿的援助",
+    "text": "苍白纸人儿\n         ———— 制作者",
+    "tips": "bilibili苍白纸人儿",
+    "mapping_id":8001123, //
+    "once_new": 1,
+    "round_number": 0,
+    "waiting_round": 1,
+    "waiting_round_end_action": [],
+    "method_settlement": "",
+    "auto_begin": 0,
+    "auto_result": 0,//需要手动启动,
+    "location": "野外:[10,15]",
+    "icon": "rite_9",
+    "tag_tips": [],
+    "tag_tips_up": {},
+    "tips_text": [
+        "放入你想的一切进行仪式吧,\n金币？（奢靡）\n装备？（杀戮）\n动物？（征服）\n或者是人呢！\n别担心，它们不会消失！\n除非那是..."
+    ],
+    "open_conditions": [
+      
+        ],
+    "random_text": {},
+    "random_text_up": {},
+    "settlement_prior": [],
+    "settlement": [
+            {
+                
+                "condition": {
+                "is":[2000680,2000326,2000083,2000558,2010001,2010002,2010003,2010004,2010005,2010006,2010007,2010008,2010009,2010010,2010011,2010012,2010013,2010014,2010015,2010016]
+            },
+            "result_title":"既然你已一键三连",
+            "result_text": "这[s1.name]卡我就帮你斩断吧\n苍白纸人儿手起刀落...",
+            "result": 
+            {    
+                "clean.s1":1
+                
+            },
+            "action": { 
+                
+            }
+            },
+            {
+                "condition": {
+                    "is":[2000986,2001032] //乙太   小狗哨子 
+                    
+                },
+                "result_title":"既然你已一键三连",
+                "result_text": "这[s1.name]我就帮你再创造一份吧\n苍白纸人儿使用魔力...",
+                "result": 
+                {    
+                    "copy.s1":1
+                },
+                "action": { 
+                    
+                }
+            },
+            {
+                "condition": {
+                   "动物": 1,
+                   "rare=":3,
+                   "is":2000461
+                
+                },
+                "result_title":"既然你已一键三连",
+                "result_text": "我就帮你创造一张征服吧\n苍白纸人儿使用魔力...",
+                "result": 
+                {    
+                    "card":[2010015,"已拥有+1"]  //银
+                },
+                "action": { 
+                    
+                }
+            },
+            {
+                "condition": {
+                   "动物": 1,
+                   "rare=":4
+                
+                },
+                "result_title":"既然你已一键三连",
+                "result_text": "我就帮你创造一张征服吧\n苍白纸人儿使用魔力...",
+                "result": 
+                {    
+                    "card":[2010016,"已拥有+1"]  //金
+                },
+                "action": { 
+                    
+                }
+            },
+            {
+                "condition": {
+                   "动物": 1,
+                   "rare=":1
+                
+                },
+                "result_title":"既然你已一键三连",
+                "result_text": "我就帮你创造一张征服吧\n苍白纸人儿使用魔力...",
+                "result": 
+                {    
+                    "card":[2010013,"已拥有+1"]  //石
+                },
+                "action": { 
+                    
+                }
+            },
+            {
+                "condition": {
+                   "动物": 1,
+                   "rare=":2
+                
+                },
+                "result_title":"既然你已一键三连",
+                "result_text": "我就帮你创造一张征服吧\n苍白纸人儿使用魔力...",
+                "result": 
+                {    
+                    "card":[2010014,"已拥有+1"]  //铜
+                },
+                "action": { 
+                    
+                }
+            },
+            {
+                "condition": {
+                   "装备": 1,
+                   "!动物": 1,
+                   "!怪物": 1,
+                   "rare=":1
+                
+                },
+                "result_title":"既然你已一键三连",
+                "result_text": "我就帮你创造一张杀戮吧\n苍白纸人儿使用魔力...",
+                "result": 
+                {    
+                    "card":[2010001,"已拥有+1"]  //石
+                },
+                "action": { 
+                    
+                }
+            },
+            {
+                "condition": {
+                   "装备": 1,
+                   "!动物": 1,
+                   "!怪物": 1,
+                   "rare=":2
+                
+                },
+                "result_title":"既然你已一键三连",
+                "result_text": "我就帮你创造一张杀戮吧\n苍白纸人儿使用魔力...",
+                "result": 
+                {    
+                    "card":[2010002,"已拥有+1"]  //铜
+                },
+                "action": { 
+                    
+                }
+            },
+            {
+                "condition": {
+                   "装备": 1,
+                   "!动物": 1,
+                   "!怪物": 1,
+                   "rare=":3
+                
+                },
+                "result_title":"既然你已一键三连",
+                "result_text": "我就帮你创造一张杀戮吧\n苍白纸人儿使用魔力...",
+                "result": 
+                {    
+                    "card":[2010003"已拥有+1"]  //银
+                },
+                "action": { 
+                    
+                }
+            },
+            {
+                "condition": {
+                   "装备": 1,
+                   "!动物": 1,
+                   "!怪物": 1,
+                   "rare=":4
+                
+                },
+                "result_title":"既然你已一键三连",
+                "result_text": "我就帮你创造一张杀戮吧\n苍白纸人儿使用魔力...",
+                "result": 
+                {    
+                    "card":[2010004,"已拥有+1"]  //金
+                },
+                "action": { 
+                    
+                }
+            },
+            {
+                "condition": {
+                  "type": "char",
+                  "!动物": 1,
+                   "!怪物": 1,
+                   "rare=":1
+                
+                },
+                "result_title":"既然你已一键三连",
+                "result_text": "我就帮你创造一张纵欲吧\n苍白纸人儿使用魔力...",
+                "result": 
+                {    
+                    "card":[2010005,"已拥有+1"]  //石
+                },
+                "action": { 
+                    
+                }
+            },
+            {
+                "condition": {
+                  "type": "char",
+                  "!动物": 1,
+                   "!怪物": 1,
+                   "rare=":2
+                
+                },
+                "result_title":"既然你已一键三连",
+                "result_text": "我就帮你创造一张纵欲吧\n苍白纸人儿使用魔力...",
+                "result": 
+                {    
+                    "card":[2010006,"已拥有+1"]  //tong
+                },
+                "action": { 
+                    
+                }
+            },
+            {
+                "condition": {
+                  "type": "char",
+                  "!动物": 1,
+                   "!怪物": 1,
+                   "rare=":3
+                
+                },
+                "result_title":"既然你已一键三连",
+                "result_text": "我就帮你创造一张纵欲吧\n苍白纸人儿使用魔力...",
+                "result": 
+                {    
+                    "card":[2010007,"已拥有+1"]  //yin
+                },
+                "action": { 
+                    
+                }
+            },
+            {
+                "condition": {
+                  "type": "char",
+                  "!动物": 1,
+                   "!怪物": 1,
+                   "rare=":4
+                
+                },
+                "result_title":"既然你已一键三连",
+                "result_text": "我就帮你创造一张纵欲吧\n苍白纸人儿使用魔力...",
+                "result": 
+                {    
+                    "card":[2010008,"已拥有+1"]  //jin
+                },
+                "action": { 
+                    
+                }
+            },
+            {
+                "condition": {
+                    "type":"item",
+                  "s1.金币=":1 //放的是金币
+                  
+                },
+                "result_title":"既然你已一键三连",
+                "result_text": "我就帮你创造一张奢靡吧\n苍白纸人儿使用魔力...",
+                "result": 
+                {    
+                    "card":[2010012,"已拥有+1"]  //金
+                     
+                },
+                "action": { 
+                    
+                }
+            },
+            {
+                "condition": {
+                  "type": "item",
+                  "s1.金币=":4 //放的是金币
+                  
+                
+                },
+                "result_title":"既然你已一键三连",
+                "result_text": "我就帮你创造一张奢靡吧\n苍白纸人儿使用魔力...",
+                "result": 
+                {    
+                    "card":[2010009,"已拥有+1"]  //shi
+                },
+                "action": { 
+                    
+                }
+            },
+            {
+                "condition": {
+                   "type":[ "item", "char"],
+                  "s1.金币=":3  //放的是金币
+                    
+                },
+                "result_title":"既然你已一键三连",
+                "result_text": "我就帮你创造一张奢靡吧\n苍白纸人儿使用魔力...",
+                "result": 
+                {    
+                    "card":[2010010,"已拥有+1"]  //tong
+                },
+                "action": { 
+                    
+                }
+            },
+            {
+                "condition": {
+                  "type": "item",
+                  "s1.金币=":2  //放的是金币
+                
+                },
+                "result_title":"既然你已一键三连",
+                "result_text": "我就帮你创造一张奢靡吧\n苍白纸人儿使用魔力...",
+                "result": 
+                {    
+                    "card":[2010011,"已拥有+1"]  //银
+                },
+                "action": { 
+                    
+                }
+            },
+            {
+                "condition": {
+                  "type": "item",
+                  "s1.金币>=":5  //放的是金币
+                
+                },
+                "result_title":"既然你已一键三连",
+                "result_text": "我就帮你创造一张奢靡吧\n苍白纸人儿使用魔力...",
+                "result": 
+                {    
+                    "card":[2010012,"已拥有+1"]  //jin
+                },
+                "action": { 
+                    
+                }
+            },
+            {
+                "condition": {
+                  "is":2050006
+                
+                },
+                "result_title":"既然你已一键三连",
+                "result_text": "我就帮你创造一张奢靡吧\n苍白纸人儿使用魔力...",
+                "result": 
+                {    
+                    "card":[2010012,"已拥有+1"]  //jin
+                },
+                "action": { 
+                    
+                }
+            }
+            
+            
+        ],                
+        "settlement_extre": [
+          
+        ],
+        "cards_slot":
+    {
+        "s1":
+            {
+                "condition": 
+                {
+                    "any":{
+                            "type":["sudan", "item", "char"],
+                            
+                        }
+                },
+                "open_adsorb":0,
+                "is_key":0,
+                "is_empty":0, // 不能为空
+                "is_enemy":0, 
+                "text":"放入你想的一切进行仪式吧,金币？装备？动物,或者是人呢！别担心，它们不会消失！除非那是...",                   
+                "pops":[
+                    {
+                        "condition":{
+                        },
+                        "action":{
+                            "pop.5006559_s1_01.self":"<i>强大的魔力...</i>"
+                        }
+                    },
+                    {
+                        "condition":{
+                            "!type":"char",
+                            "!装备":1,
+                            "!情报":1,
+                            "!金币":1,
+                            "!大餐":1,
+                            "情报":1,
+                            "怪物":1,
+                            "!is":2000558,
+                            "!is":2000083  
+                        },
+                        "action":{
+                            "pop.5006557_s1_06.self":"这可无能为力"
+                        }
+                    }
+                ] 
+                
+            }
+            
+    }
+} 
