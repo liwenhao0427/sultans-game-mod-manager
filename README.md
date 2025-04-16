@@ -1,3 +1,6 @@
+# 该项目已无限期停更，目前采用新的方式实现Mod管理功能
+新项目地址： https://liwenhao0427.github.io/sultans-game-mod-git-manager/
+
 # 苏丹的游戏 MOD 管理器
 
 苏丹的游戏 MOD 管理器是一个用于游戏MOD管理的项目，如有侵权请联系我删除项目。

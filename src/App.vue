@@ -7,6 +7,14 @@
         <p>快速开始：勾选需要的MOD并点击“导出选中”按钮。</p>
         <el-button type="text" @click="showGuideDialog">查看详细操作指引</el-button>
       </div>
+      <div class="operation-guide" >
+        <p style="color: red">该项目已停更</p>
+        <el-button type="text" >
+          <a href="https://liwenhao0427.github.io/sultans-game-mod-git-manager/" target="_blank">
+           新项目地址
+          </a>
+        </el-button>
+      </div>
       <div class="search-bar">
         <el-input
           v-model="searchQuery"
